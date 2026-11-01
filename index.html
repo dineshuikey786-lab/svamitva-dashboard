@@ -86,7 +86,7 @@
   .sv-tile.sv-watch { border-color: var(--color-warn); }
   .sv .sv-up { color: var(--color-ok); }
   .sv .sv-down { color: var(--color-bad); }
-  .sv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+  .sv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr)); gap: var(--cds-gap-md); }
   .sv-card { display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; padding: var(--cds-pad-lg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
   .sv-card.sv-wide { grid-column: 1 / -1; }
   .sv-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
@@ -139,6 +139,58 @@
   .sv tr.sv-bot td:first-child { box-shadow: inset 3px 0 0 var(--color-bad); }
   .sv tr.sv-split td { border-top: 2px solid var(--color-border-line); }
   .sv-ltable th button { cursor: default; }
+
+  /* Bold look and hover help */
+  .sv h1 { font-size: 32px; font-weight: 600; letter-spacing: -.01em; }
+  .sv h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .sv h3 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .sv-take { font-size: 16px; color: var(--color-fg); }
+  .sv-take b { font-weight: 700; }
+  .sv-tile { border-top: 4px solid var(--color-border-line); transition: transform .15s ease, box-shadow .15s ease; position: relative; }
+  .sv-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 18px color-mix(in srgb, var(--color-fg) 12%, transparent); }
+  .sv-tile.sv-acc-ok { border-top-color: var(--color-ok); }
+  .sv-tile.sv-acc-warn { border-top-color: var(--color-warn); }
+  .sv-tile.sv-acc-bad { border-top-color: var(--color-bad); }
+  .sv-tile.sv-acc-info { border-top-color: var(--cds-chart-reference); }
+  .sv-tile.sv-acc-muted { border-top-color: var(--cds-chart-muted); }
+  .sv-tile .sv-lab { font-size: 13px; font-weight: 700; color: var(--color-fg); display: flex; align-items: center; gap: 6px; }
+  .sv-tile .sv-kv { font-size: 36px; font-weight: 600; }
+  .sv-tile .sv-sub { font-size: 13px; }
+  .sv-tile .sv-sub .sv-up, .sv-tile .sv-sub .sv-down, .sv-kv .sv-up, .sv-kv .sv-down { font-weight: 700; }
+  .sv-card { transition: box-shadow .15s ease; }
+  .sv-card:hover { box-shadow: 0 4px 16px color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .sv-tab { font-weight: 600; font-size: 15px; }
+  .sv-tab:hover { color: var(--color-fg); background: var(--color-panel); }
+  .sv-tab[aria-selected="true"] { border-bottom-width: 3px; font-weight: 700; }
+  .sv-filters label { font-weight: 700; color: var(--color-fg); }
+  .sv-chart text { font-size: 12px; }
+  .sv-chart .sv-strong { font-weight: 700; }
+  .sv-chart rect:not(.sv-ov), .sv-chart circle, .sv-chart path { transition: opacity .15s ease, filter .15s ease; }
+  .sv-chart rect:not(.sv-ov):hover { filter: brightness(1.12) saturate(1.2); stroke: var(--color-fg); stroke-width: 1.5px; }
+  .sv-chart circle:hover { stroke: var(--color-fg); stroke-width: 2px; }
+  .sv-chart g:hover > text { fill: var(--color-fg); font-weight: 700; }
+  .sv-tip { font-size: 13px; padding: 8px 10px; }
+  .sv-tip .sv-tip-h { font-weight: 700; color: var(--color-fg); }
+  .sv th { font-weight: 700; }
+  .sv th button { color: var(--color-fg); font-weight: 700; }
+  .sv td { font-size: 13px; }
+  .sv tbody tr:hover td { background: color-mix(in srgb, var(--color-warn) 10%, transparent); }
+  .sv tbody tr:hover td:first-child { font-weight: 700; }
+  .sv-info { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font: 700 11px/1 var(--sv-font); font-style: normal; color: var(--color-bg); background: var(--color-fg-muted); cursor: help; position: relative; flex: none; }
+  .sv-info:hover, .sv-info:focus-visible { background: var(--color-fg); }
+  .sv-info::after, .sv th[data-tip]::after {
+    content: attr(data-tip); position: absolute; z-index: 20; left: 50%; top: calc(100% + 6px); transform: translateX(-50%);
+    width: max-content; max-width: min(18rem, 80vw); white-space: normal; text-align: left;
+    font: 400 12px/1.45 var(--sv-font); letter-spacing: 0; text-transform: none; color: var(--color-fg);
+    background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover);
+    padding: 8px 10px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .12s ease;
+  }
+  .sv-info:hover::after, .sv-info:focus-visible::after, .sv th[data-tip]:hover::after { opacity: 1; visibility: visible; }
+  .sv th[data-tip] { position: sticky; }
+  .sv th[data-tip]::after { left: 0; transform: none; top: 100%; }
+  .sv th[data-tip]:last-child::after { left: auto; right: 0; }
+  .sv-tile .sv-info::after { left: 0; transform: none; }
+  .sv-tile:nth-child(n+4) .sv-info::after, .sv-card:nth-child(even) h2 .sv-info::after { left: auto; right: 0; }
   [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
   [data-dash-source-state=empty] { color: transparent; }
 </style>
@@ -196,32 +248,32 @@
 
     <section class="sv-grid" id="lead-groups" aria-label="Top and bottom">
       <article class="sv-card" id="top-card">
-        <h2>Top patwaris</h2>
+        <h2>Top patwaris <span class="sv-info" tabindex="0" role="note" aria-label="Patwaris with the best result on the measure picked in &quot;Rank patwaris by&quot;, for the trend dates above. Hover a bar for details, click to filter." data-tip="Patwaris with the best result on the measure picked in &quot;Rank patwaris by&quot;, for the trend dates above. Hover a bar for details, click to filter.">i</span></h2>
         <p class="sv-note">Highest on the chosen measure. Click a bar to filter the page to that patwari.</p>
         <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-bars" data-group="top" data-source="patwari_range"></div>
       </article>
       <article class="sv-card" id="bottom-card">
-        <h2>Bottom patwaris</h2>
+        <h2>Bottom patwaris <span class="sv-info" tabindex="0" role="note" aria-label="Patwaris with the weakest result on the chosen measure, lowest first. These need follow-up. Hover a bar for details." data-tip="Patwaris with the weakest result on the chosen measure, lowest first. These need follow-up. Hover a bar for details.">i</span></h2>
         <p class="sv-note">Lowest on the chosen measure, lowest first. These need follow-up.</p>
         <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-bars" data-group="bottom" data-source="patwari_range"></div>
       </article>
       <article class="sv-card sv-wide" id="lead-trend-card">
-        <h2>Day-by-day % completed, top vs bottom</h2>
+        <h2>Day-by-day % completed, top vs bottom <span class="sv-info" tabindex="0" role="note" aria-label="Each line is one patwari&#x27;s % completed on each update day. Green: top group, red: bottom group, dashed: whole tehsil. Hover to read every line on that day." data-tip="Each line is one patwari&#x27;s % completed on each update day. Green: top group, red: bottom group, dashed: whole tehsil. Hover to read every line on that day.">i</span></h2>
         <p class="sv-note">Green lines are top patwaris, red lines are bottom patwaris, and the dashed line is Tamia tehsil overall. Hover for each day's numbers.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-trend" data-source="scope_daily patwari_range"></div>
       </article>
       <article class="sv-card" id="lead-slope-card">
-        <h2>Start vs end of the range</h2>
+        <h2>Start vs end of the range <span class="sv-info" tabindex="0" role="note" aria-label="Left dot: % completed on the start date. Right dot: % on the end date. Steeper line = faster progress." data-tip="Left dot: % completed on the start date. Right dot: % on the end date. Steeper line = faster progress.">i</span></h2>
         <p class="sv-note">Each line joins a patwari's % completed on the start date to the end date. A steeper line means faster progress.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-slope" data-source="patwari_range"></div>
       </article>
       <article class="sv-card" id="lead-gap-card">
-        <h2>Gap between top and bottom groups</h2>
+        <h2>Gap between top and bottom groups <span class="sv-info" tabindex="0" role="note" aria-label="Average % completed of the top group and of the bottom group. The shaded band is the gap. A wider band means the bottom group is falling behind." data-tip="Average % completed of the top group and of the bottom group. The shaded band is the gap. A wider band means the bottom group is falling behind.">i</span></h2>
         <p class="sv-note">Average % completed of the top group and the bottom group on each update day. A widening gap means the bottom group is falling further behind.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-gap" data-source="scope_daily patwari_range"></div>
       </article>
       <article class="sv-card sv-wide" id="lead-multi-card">
-        <h2>Plots completed each update, per patwari</h2>
+        <h2>Plots completed each update, per patwari <span class="sv-info" tabindex="0" role="note" aria-label="One small chart per patwari. Each bar is plots completed on that update day. All charts share one scale." data-tip="One small chart per patwari. Each bar is plots completed on that update day. All charts share one scale.">i</span></h2>
         <p class="sv-note">One small chart per patwari, all on the same scale, so bar heights compare directly. Top group first, then bottom group.</p>
         <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-multi" data-source="scope_daily patwari_range"></div>
       </article>
@@ -229,7 +281,7 @@
 
     <section class="sv-card" id="lead-table">
       <div class="sv-tablebar">
-        <h2>Top and bottom patwaris compared</h2>
+        <h2>Top and bottom patwaris compared <span class="sv-info" tabindex="0" role="note" aria-label="The same patwaris as the charts above, with start and end %, gain, plots completed, pending verification and stuck villages." data-tip="The same patwaris as the charts above, with start and end %, gain, plots completed, pending verification and stuck villages.">i</span></h2>
         <span class="sv-note">Green edge: top group. Red edge: bottom group. Click a row to filter the page.</span>
       </div>
       <div class="sv-tbox">
@@ -237,16 +289,16 @@
           <thead>
             <tr>
               <th data-field="patwari"><button type="button" tabindex="-1">Patwari</button></th>
-              <th data-field="villages"><button type="button" tabindex="-1">Villages</button></th>
-              <th data-field="plots"><button type="button" tabindex="-1">Plots</button></th>
-              <th data-field="pct_from"><button type="button" tabindex="-1">% at start</button></th>
-              <th data-field="pct_to"><button type="button" tabindex="-1">% at end</button></th>
-              <th data-field="gain_pts"><button type="button" tabindex="-1">Gain</button></th>
-              <th data-field="plots_done"><button type="button" tabindex="-1">Plots completed</button></th>
-              <th data-field="per_update"><button type="button" tabindex="-1">Per update</button></th>
-              <th data-field="verification"><button type="button" tabindex="-1">Pending verification</button></th>
-              <th data-field="not_started"><button type="button" tabindex="-1">Not started</button></th>
-              <th data-field="stuck"><button type="button" tabindex="-1">Stuck villages</button></th>
+              <th data-field="villages" data-tip="Number of villages with this patwari."><button type="button" tabindex="-1">Villages</button></th>
+              <th data-field="plots" data-tip="Total plots in these villages."><button type="button" tabindex="-1">Plots</button></th>
+              <th data-field="pct_from" data-tip="% completed on the trend start date."><button type="button" tabindex="-1">% at start</button></th>
+              <th data-field="pct_to" data-tip="% completed on the trend end date."><button type="button" tabindex="-1">% at end</button></th>
+              <th data-field="gain_pts" data-tip="% points gained between start and end."><button type="button" tabindex="-1">Gain</button></th>
+              <th data-field="plots_done" data-tip="Plots completed between the start and end dates."><button type="button" tabindex="-1">Plots completed</button></th>
+              <th data-field="per_update" data-tip="Plots completed per update day in the range."><button type="button" tabindex="-1">Per update</button></th>
+              <th data-field="verification" data-tip="Plots waiting for patwari verification on the end date."><button type="button" tabindex="-1">Pending verification</button></th>
+              <th data-field="not_started" data-tip="Plots with no registry started yet."><button type="button" tabindex="-1">Not started</button></th>
+              <th data-field="stuck" data-tip="Villages with no change for 3+ updates, not yet complete."><button type="button" tabindex="-1">Stuck villages</button></th>
             </tr>
           </thead>
           <tbody data-draw="ltable"></tbody>
@@ -259,33 +311,33 @@
     <p class="sv-take">Comparing <b data-draw="asof">—</b> with the previous update, <b data-draw="prev">—</b>, for <b data-draw="dod-scope">—</b>. Change the As of date above to compare any two days in a row. Pick a patwari above to see only that patwari in the cards and stage chart.</p>
 
     <section class="sv-tiles" id="dod-summary" aria-label="Previous vs current day summary">
-      <div class="sv-tile">
-        <span class="sv-lab">Plots completed on previous day</span>
+      <div class="sv-tile sv-acc-ok">
+        <span class="sv-lab">Plots completed on previous day <span class="sv-info" tabindex="0" role="note" aria-label="Plots whose registry was completed on the previous update day (completed then minus completed the update before)." data-tip="Plots whose registry was completed on the previous update day (completed then minus completed the update before).">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="work_prev">—</span>
         <span class="sv-sub">Work done on the previous update</span>
       </div>
-      <div class="sv-tile">
-        <span class="sv-lab">Plots completed on current day</span>
+      <div class="sv-tile sv-acc-ok">
+        <span class="sv-lab">Plots completed on current day <span class="sv-info" tabindex="0" role="note" aria-label="Plots whose registry was completed on the as-of date, compared with the update before it." data-tip="Plots whose registry was completed on the as-of date, compared with the update before it.">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="work_today">—</span>
         <span class="sv-sub">Work done on the as-of date</span>
       </div>
-      <div class="sv-tile">
-        <span class="sv-lab">Change in daily work</span>
+      <div class="sv-tile sv-acc-ok">
+        <span class="sv-lab">Change in daily work <span class="sv-info" tabindex="0" role="note" aria-label="Current day work minus previous day work. Green: more work than the day before. Red: less." data-tip="Current day work minus previous day work. Green: more work than the day before. Red: less.">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="d_work">—</span>
         <span class="sv-sub">Current day minus previous day</span>
       </div>
-      <div class="sv-tile">
-        <span class="sv-lab">% of plots completed</span>
+      <div class="sv-tile sv-acc-ok">
+        <span class="sv-lab">% of plots completed <span class="sv-info" tabindex="0" role="note" aria-label="Completed plots divided by all plots. The small line shows the change from the previous update." data-tip="Completed plots divided by all plots. The small line shows the change from the previous update.">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="pct">—</span>
         <span class="sv-sub"><span data-draw="dodk" data-k="prev_pct">—</span> on previous day</span>
       </div>
-      <div class="sv-tile sv-watch">
-        <span class="sv-lab">Pending patwari verification</span>
+      <div class="sv-tile sv-acc-warn sv-watch">
+        <span class="sv-lab">Pending patwari verification <span class="sv-info" tabindex="0" role="note" aria-label="Plots waiting in the Patwari verification stage. These need the patwari to act, so keep this low." data-tip="Plots waiting in the Patwari verification stage. These need the patwari to act, so keep this low.">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="verification">—</span>
         <span class="sv-sub"><span data-draw="dodk" data-k="prev_verification">—</span> on previous day</span>
       </div>
-      <div class="sv-tile">
-        <span class="sv-lab">Villages moved</span>
+      <div class="sv-tile sv-acc-ok">
+        <span class="sv-lab">Villages moved <span class="sv-info" tabindex="0" role="note" aria-label="Villages where any stage count changed since the previous update day." data-tip="Villages where any stage count changed since the previous update day.">i</span></span>
         <span class="sv-kv" data-draw="dodk" data-k="moved">—</span>
         <span class="sv-sub"><span data-draw="dodk" data-k="prev_moved">—</span> on previous day</span>
       </div>
@@ -293,20 +345,20 @@
 
     <section class="sv-grid" id="dod-charts" aria-label="Previous vs current day charts">
       <article class="sv-card sv-wide" id="dod-work-card">
-        <h2>Daily work by patwari: previous day vs current day</h2>
+        <h2>Daily work by patwari: previous day vs current day <span class="sv-info" tabindex="0" role="note" aria-label="Grey bar: plots completed on the previous day. Colored bar: plots completed on the current day (green if more, red if less)." data-tip="Grey bar: plots completed on the previous day. Colored bar: plots completed on the current day (green if more, red if less).">i</span></h2>
         <p class="sv-note">Plots completed on each day. Grey bar: previous day. Colored bar: current day, green if more than the previous day, red if less. Sorted by current day's work. Click a patwari to filter.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-work" data-source="patwari_dod"></div>
       </article>
       <article class="sv-card" id="dod-dumb-card">
-        <h2>% completed: previous day → current day</h2>
+        <h2>% completed: previous day → current day <span class="sv-info" tabindex="0" role="note" aria-label="Grey dot: % completed on the previous day. Colored dot: % on the current day. The line between them is the jump." data-tip="Grey dot: % completed on the previous day. Colored dot: % on the current day. The line between them is the jump.">i</span></h2>
         <p class="sv-note">Grey dot: previous day. Colored dot: current day. A longer line means a bigger jump.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-dumb" data-source="patwari_dod"></div>
       </article>
       <article class="sv-card" id="dod-side-card">
-        <h2>Stage changes since previous day</h2>
+        <h2>Stage changes since previous day <span class="sv-info" tabindex="0" role="note" aria-label="For each stage: grey bar is the previous day, colored bar is today, and the number in brackets is the change." data-tip="For each stage: grey bar is the previous day, colored bar is today, and the number in brackets is the change.">i</span></h2>
         <p class="sv-note">Plots in each stage on the previous day and the current day, for the tehsil or the patwari picked above.</p>
         <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-stage" data-source="patwari_dod"></div>
-        <h3>Patwaris faster, slower or with no work</h3>
+        <h3>Patwaris faster, slower or with no work <span class="sv-info" tabindex="0" role="note" aria-label="Faster: more plots completed than on the previous day. Slower: fewer. No work: none completed today. Hover a block to see the names." data-tip="Faster: more plots completed than on the previous day. Slower: fewer. No work: none completed today. Hover a block to see the names.">i</span></h3>
         <p class="sv-note">Faster means more plots completed than on the previous day.</p>
         <div class="sv-chart dash-skeleton" data-draw="dod-trend" data-source="patwari_dod"></div>
       </article>
@@ -314,7 +366,7 @@
 
     <section class="sv-card" id="dod-matrix">
       <div class="sv-tablebar">
-        <h2>Patwari matrix: previous vs current day</h2>
+        <h2>Patwari matrix: previous vs current day <span class="sv-info" tabindex="0" role="note" aria-label="One row per patwari. Change columns are shaded green for progress and red for going back. Hover a column title to see what it means." data-tip="One row per patwari. Change columns are shaded green for progress and red for going back. Hover a column title to see what it means.">i</span></h2>
         <span class="sv-note">Change columns are shaded: green for progress, red for going back. Click a column to sort, or a row to filter.</span>
       </div>
       <div class="sv-tbox">
@@ -322,24 +374,24 @@
           <thead>
             <tr>
               <th data-field="name" data-sort="name"><button type="button">Patwari</button></th>
-              <th data-field="trend" data-sort="trend" class="sv-l"><button type="button">Status</button></th>
-              <th data-field="work_prev" data-sort="work_prev"><button type="button">Work prev day</button></th>
-              <th data-field="work_today" data-sort="work_today"><button type="button">Work current day</button></th>
-              <th data-field="d_work" data-sort="d_work"><button type="button">Change in work</button></th>
-              <th data-field="prev_completed" data-sort="prev_completed"><button type="button">Completed prev</button></th>
-              <th data-field="completed" data-sort="completed"><button type="button">Completed now</button></th>
-              <th data-field="prev_pct" data-sort="prev_pct"><button type="button">% prev</button></th>
-              <th data-field="pct" data-sort="pct"><button type="button">% now</button></th>
-              <th data-field="d_pct" data-sort="d_pct"><button type="button">Change in %</button></th>
-              <th data-field="prev_verification" data-sort="prev_verification"><button type="button">Verification prev</button></th>
-              <th data-field="verification" data-sort="verification"><button type="button">Verification now</button></th>
-              <th data-field="d_verification" data-sort="d_verification"><button type="button">Change in verification</button></th>
-              <th data-field="d_initiated" data-sort="d_initiated"><button type="button">Change in initiated</button></th>
-              <th data-field="d_submitted" data-sort="d_submitted"><button type="button">Change in submitted</button></th>
-              <th data-field="d_registration" data-sort="d_registration"><button type="button">Change in registration</button></th>
-              <th data-field="d_not_started" data-sort="d_not_started"><button type="button">Change in not started</button></th>
-              <th data-field="moved" data-sort="moved"><button type="button">Villages moved</button></th>
-              <th data-field="stuck" data-sort="stuck"><button type="button">Stuck villages</button></th>
+              <th data-field="trend" data-sort="trend" class="sv-l" data-tip="Faster / Slower / Same / No work, comparing today&#x27;s work with the previous day."><button type="button">Status</button></th>
+              <th data-field="work_prev" data-sort="work_prev" data-tip="Plots completed on the previous update day."><button type="button">Work prev day</button></th>
+              <th data-field="work_today" data-sort="work_today" data-tip="Plots completed on the as-of date."><button type="button">Work current day</button></th>
+              <th data-field="d_work" data-sort="d_work" data-tip="Current day work minus previous day work."><button type="button">Change in work</button></th>
+              <th data-field="prev_completed" data-sort="prev_completed" data-tip="Completed plots on the previous day."><button type="button">Completed prev</button></th>
+              <th data-field="completed" data-sort="completed" data-tip="Completed plots on the as-of date."><button type="button">Completed now</button></th>
+              <th data-field="prev_pct" data-sort="prev_pct" data-tip="% completed on the previous day."><button type="button">% prev</button></th>
+              <th data-field="pct" data-sort="pct" data-tip="% completed on the as-of date."><button type="button">% now</button></th>
+              <th data-field="d_pct" data-sort="d_pct" data-tip="Change in % completed, in percentage points."><button type="button">Change in %</button></th>
+              <th data-field="prev_verification" data-sort="prev_verification" data-tip="Plots pending patwari verification on the previous day."><button type="button">Verification prev</button></th>
+              <th data-field="verification" data-sort="verification" data-tip="Plots pending patwari verification now."><button type="button">Verification now</button></th>
+              <th data-field="d_verification" data-sort="d_verification" data-tip="Change in plots pending verification. Going down usually means the patwari cleared work."><button type="button">Change in verification</button></th>
+              <th data-field="d_initiated" data-sort="d_initiated" data-tip="Change in plots in Registry initiated."><button type="button">Change in initiated</button></th>
+              <th data-field="d_submitted" data-sort="d_submitted" data-tip="Change in plots submitted."><button type="button">Change in submitted</button></th>
+              <th data-field="d_registration" data-sort="d_registration" data-tip="Change in plots in registration."><button type="button">Change in registration</button></th>
+              <th data-field="d_not_started" data-sort="d_not_started" data-tip="Change in plots not started. Going down (green) means new registries began."><button type="button">Change in not started</button></th>
+              <th data-field="moved" data-sort="moved" data-tip="Villages with any change since the previous update day."><button type="button">Villages moved</button></th>
+              <th data-field="stuck" data-sort="stuck" data-tip="Villages with no change for 3+ updates, not yet complete."><button type="button">Stuck villages</button></th>
             </tr>
           </thead>
           <tbody data-draw="dtable"></tbody>
@@ -350,33 +402,33 @@
 
   <div class="sv-page" id="overview">
   <section class="sv-tiles" id="summary" aria-label="Summary">
-    <div class="sv-tile">
-      <span class="sv-lab">Registry completed (plots)</span>
+    <div class="sv-tile sv-acc-ok">
+      <span class="sv-lab">Registry completed (plots) <span class="sv-info" tabindex="0" role="note" aria-label="Plots whose registry is fully completed on the as-of date. The small line shows plots added since the previous update." data-tip="Plots whose registry is fully completed on the as-of date. The small line shows plots added since the previous update.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="completed">—</span>
       <span class="sv-sub"><span data-draw="kpid" data-k="d_completed">—</span> since previous update</span>
     </div>
-    <div class="sv-tile">
-      <span class="sv-lab">% of plots completed</span>
+    <div class="sv-tile sv-acc-ok">
+      <span class="sv-lab">% of plots completed <span class="sv-info" tabindex="0" role="note" aria-label="Completed plots divided by all plots. The small line shows the change from the previous update." data-tip="Completed plots divided by all plots. The small line shows the change from the previous update.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="pct">—</span>
       <span class="sv-sub"><span data-draw="kpid" data-k="d_pct">—</span> since previous update</span>
     </div>
-    <div class="sv-tile sv-watch">
-      <span class="sv-lab">Pending patwari verification</span>
+    <div class="sv-tile sv-acc-warn sv-watch">
+      <span class="sv-lab">Pending patwari verification <span class="sv-info" tabindex="0" role="note" aria-label="Plots waiting in the Patwari verification stage. These need the patwari to act, so keep this low." data-tip="Plots waiting in the Patwari verification stage. These need the patwari to act, so keep this low.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="verification">—</span>
       <span class="sv-sub">Plots waiting on the patwari</span>
     </div>
-    <div class="sv-tile">
-      <span class="sv-lab">Other registry stages</span>
+    <div class="sv-tile sv-acc-info">
+      <span class="sv-lab">Other registry stages <span class="sv-info" tabindex="0" role="note" aria-label="Plots in Registry initiated, Submitted or Registration. Work started but not finished." data-tip="Plots in Registry initiated, Submitted or Registration. Work started but not finished.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="pending_other">—</span>
       <span class="sv-sub">Initiated, submitted or in registration</span>
     </div>
-    <div class="sv-tile">
-      <span class="sv-lab">Not started</span>
+    <div class="sv-tile sv-acc-muted">
+      <span class="sv-lab">Not started <span class="sv-info" tabindex="0" role="note" aria-label="Plots with no registry started yet: total plots minus plots in all five stages." data-tip="Plots with no registry started yet: total plots minus plots in all five stages.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="not_started">—</span>
       <span class="sv-sub">Plots with no registry yet</span>
     </div>
-    <div class="sv-tile">
-      <span class="sv-lab">Stuck villages</span>
+    <div class="sv-tile sv-acc-bad">
+      <span class="sv-lab">Stuck villages <span class="sv-info" tabindex="0" role="note" aria-label="Villages with no change for 3 or more updates in a row that are not yet 100% completed. Follow these up first." data-tip="Villages with no change for 3 or more updates in a row that are not yet 100% completed. Follow these up first.">i</span></span>
       <span class="sv-kv" data-draw="kpi" data-k="stuck">—</span>
       <span class="sv-sub"><span data-draw="kpi" data-k="moved">—</span> of <span data-draw="kpi" data-k="villages">—</span> villages moved since previous update</span>
     </div>
@@ -384,12 +436,12 @@
 
   <section class="sv-grid" id="stages" aria-label="Stages">
     <article class="sv-card" id="funnel-card">
-      <h2>Where plots are now</h2>
+      <h2>Where plots are now <span class="sv-info" tabindex="0" role="note" aria-label="How many plots sit in each registry stage on the as-of date. Each plot is in one stage only." data-tip="How many plots sit in each registry stage on the as-of date. Each plot is in one stage only.">i</span></h2>
       <p class="sv-note">Plots in each registry stage on the as-of date. Each plot sits in one stage. The stage picked under "Stage to fix" is highlighted.</p>
       <div class="sv-chart sv-h220 dash-skeleton" data-draw="funnel" data-source="scope_daily"></div>
     </article>
     <article class="sv-card" id="donut-card">
-      <h2>Share of plots by stage</h2>
+      <h2>Share of plots by stage <span class="sv-info" tabindex="0" role="note" aria-label="The same plots as a share of all plots. The center shows % completed." data-tip="The same plots as a share of all plots. The center shows % completed.">i</span></h2>
       <p class="sv-note">The same plots as a share of the total.</p>
       <div class="sv-chart sv-h220 dash-skeleton" data-draw="donut" data-source="scope_daily"></div>
     </article>
@@ -397,17 +449,17 @@
 
   <section class="sv-grid" id="trend" aria-label="Day by day">
     <article class="sv-card sv-wide" id="trend-card">
-      <h2>Day-by-day progress</h2>
+      <h2>Day-by-day progress <span class="sv-info" tabindex="0" role="note" aria-label="Completed, in-process and not-started plots on each update day. Hover anywhere on the chart to read the values for that day." data-tip="Completed, in-process and not-started plots on each update day. Hover anywhere on the chart to read the values for that day.">i</span></h2>
       <p class="sv-note">Plots completed, in the registry process, and not started, on each update day in the trend range. Days with no update in the sheet are skipped.</p>
       <div class="sv-chart sv-h280 dash-skeleton" data-draw="trend" data-source="scope_daily"></div>
     </article>
     <article class="sv-card" id="daily-card">
-      <h2>Plots completed each update</h2>
+      <h2>Plots completed each update <span class="sv-info" tabindex="0" role="note" aria-label="Plots completed since the previous update day. Taller bar = more work done that day." data-tip="Plots completed since the previous update day. Taller bar = more work done that day.">i</span></h2>
       <p class="sv-note">Change in completed plots since the previous update day.</p>
       <div class="sv-chart sv-h220 dash-skeleton" data-draw="daily" data-source="scope_daily"></div>
     </article>
     <article class="sv-card" id="moved-card">
-      <h2>Villages moving vs stuck</h2>
+      <h2>Villages moving vs stuck <span class="sv-info" tabindex="0" role="note" aria-label="Green: villages with any change since the previous update. Red: villages with no change for 3+ updates that are not complete." data-tip="Green: villages with any change since the previous update. Red: villages with no change for 3+ updates that are not complete.">i</span></h2>
       <p class="sv-note">Villages with any stage change since the previous update, and villages with no change for 3 or more updates that are not yet fully completed.</p>
       <div class="sv-chart sv-h220 dash-skeleton" data-draw="moved" data-source="scope_daily"></div>
     </article>
@@ -415,12 +467,12 @@
 
   <section class="sv-grid" id="patwaris" aria-label="Patwaris">
     <article class="sv-card" id="rank-card">
-      <h2>Patwari ranking</h2>
+      <h2>Patwari ranking <span class="sv-info" tabindex="0" role="note" aria-label="Each bar is one patwari&#x27;s plots split by stage, sorted by % completed. Hover for the stage counts, click to filter the page." data-tip="Each bar is one patwari&#x27;s plots split by stage, sorted by % completed. Hover for the stage counts, click to filter the page.">i</span></h2>
       <p class="sv-note">Each patwari's plots by stage on the as-of date, sorted by % completed. Click a bar to filter the page to that patwari.</p>
       <div class="sv-chart sv-h280 dash-skeleton" data-draw="rank" data-source="scope_daily"></div>
     </article>
     <article class="sv-card" id="heat-card">
-      <h2>% completed by patwari, day by day</h2>
+      <h2>% completed by patwari, day by day <span class="sv-info" tabindex="0" role="note" aria-label="Rows are patwaris, columns are update days. Darker green = higher % completed. Hover a cell for that day&#x27;s numbers, click to jump to it." data-tip="Rows are patwaris, columns are update days. Darker green = higher % completed. Hover a cell for that day&#x27;s numbers, click to jump to it.">i</span></h2>
       <p class="sv-note">Darker cells mean more plots completed. Rows follow the ranking order. Hover for the day's numbers.</p>
       <div class="sv-chart sv-h280 dash-skeleton" data-draw="heat" data-source="scope_daily"></div>
     </article>
@@ -428,7 +480,7 @@
 
   <section class="sv-card" id="patwari-table">
     <div class="sv-tablebar">
-      <h2>Patwari table</h2>
+      <h2>Patwari table <span class="sv-info" tabindex="0" role="note" aria-label="All patwaris on the as-of date. Click a column title to sort, click a row to filter the page to that patwari." data-tip="All patwaris on the as-of date. Click a column title to sort, click a row to filter the page to that patwari.">i</span></h2>
       <span class="sv-note">On the as-of date. Click a column to sort, or a row to filter the page.</span>
     </div>
     <div class="sv-tbox">
@@ -436,18 +488,18 @@
         <thead>
           <tr>
             <th data-field="name" data-sort="name"><button type="button">Patwari</button></th>
-            <th data-field="villages" data-sort="villages"><button type="button">Villages</button></th>
-            <th data-field="plots" data-sort="plots"><button type="button">Plots</button></th>
-            <th data-field="not_started" data-sort="not_started"><button type="button">Not started</button></th>
-            <th data-field="initiated" data-sort="initiated"><button type="button">Initiated</button></th>
-            <th data-field="verification" data-sort="verification"><button type="button">Patwari verification</button></th>
-            <th data-field="submitted" data-sort="submitted"><button type="button">Submitted</button></th>
-            <th data-field="registration" data-sort="registration"><button type="button">Registration</button></th>
-            <th data-field="completed" data-sort="completed"><button type="button">Completed</button></th>
-            <th data-field="pct" data-sort="pct"><button type="button">% completed</button></th>
-            <th data-field="d_completed" data-sort="d_completed"><button type="button">Change</button></th>
-            <th data-field="moved" data-sort="moved"><button type="button">Villages moved</button></th>
-            <th data-field="stuck" data-sort="stuck"><button type="button">Stuck villages</button></th>
+            <th data-field="villages" data-sort="villages" data-tip="Number of villages with this patwari."><button type="button">Villages</button></th>
+            <th data-field="plots" data-sort="plots" data-tip="Total plots in these villages."><button type="button">Plots</button></th>
+            <th data-field="not_started" data-sort="not_started" data-tip="Plots with no registry started yet."><button type="button">Not started</button></th>
+            <th data-field="initiated" data-sort="initiated" data-tip="Plots in Registry initiated."><button type="button">Initiated</button></th>
+            <th data-field="verification" data-sort="verification" data-tip="Plots waiting for patwari verification."><button type="button">Patwari verification</button></th>
+            <th data-field="submitted" data-sort="submitted" data-tip="Plots submitted."><button type="button">Submitted</button></th>
+            <th data-field="registration" data-sort="registration" data-tip="Plots in registration."><button type="button">Registration</button></th>
+            <th data-field="completed" data-sort="completed" data-tip="Plots with registry completed."><button type="button">Completed</button></th>
+            <th data-field="pct" data-sort="pct" data-tip="Completed plots ÷ total plots."><button type="button">% completed</button></th>
+            <th data-field="d_completed" data-sort="d_completed" data-tip="Completed plots added since the previous update day."><button type="button">Change</button></th>
+            <th data-field="moved" data-sort="moved" data-tip="Villages with any change since the previous update day."><button type="button">Villages moved</button></th>
+            <th data-field="stuck" data-sort="stuck" data-tip="Villages with no change for 3+ updates, not yet complete."><button type="button">Stuck villages</button></th>
           </tr>
         </thead>
         <tbody data-draw="ptable"></tbody>
@@ -457,7 +509,7 @@
 
   <section class="sv-card" id="village-table">
     <div class="sv-tablebar">
-      <h2>Villages to follow up</h2>
+      <h2>Villages to follow up <span class="sv-info" tabindex="0" role="note" aria-label="Villages for the patwari and stage picked above. Without a stage picked, the longest-stuck villages come first." data-tip="Villages for the patwari and stage picked above. Without a stage picked, the longest-stuck villages come first.">i</span></h2>
       <input type="search" id="v-search" class="sv-vsearch" placeholder="Search village or patwari" aria-label="Search villages">
     </div>
     <p class="sv-note">On the as-of date, for the patwari and village picked above. With a stage picked, only villages with plots in that stage are listed, most first. Otherwise the longest-stuck villages come first.</p>
@@ -467,16 +519,16 @@
           <tr>
             <th data-field="village" data-sort="village"><button type="button">Village</button></th>
             <th data-field="patwari" data-sort="patwari" class="sv-l"><button type="button">Patwari</button></th>
-            <th data-field="plots" data-sort="plots"><button type="button">Plots</button></th>
-            <th data-field="not_started" data-sort="not_started"><button type="button">Not started</button></th>
-            <th data-field="initiated" data-sort="initiated"><button type="button">Initiated</button></th>
-            <th data-field="verification" data-sort="verification"><button type="button">Patwari verification</button></th>
-            <th data-field="submitted" data-sort="submitted"><button type="button">Submitted</button></th>
-            <th data-field="registration" data-sort="registration"><button type="button">Registration</button></th>
-            <th data-field="completed" data-sort="completed"><button type="button">Completed</button></th>
-            <th data-field="pct" data-sort="pct"><button type="button">% completed</button></th>
-            <th data-field="d_completed" data-sort="d_completed"><button type="button">Change</button></th>
-            <th data-field="idle" data-sort="idle"><button type="button">Updates with no change</button></th>
+            <th data-field="plots" data-sort="plots" data-tip="Total plots in these villages."><button type="button">Plots</button></th>
+            <th data-field="not_started" data-sort="not_started" data-tip="Plots with no registry started yet."><button type="button">Not started</button></th>
+            <th data-field="initiated" data-sort="initiated" data-tip="Plots in Registry initiated."><button type="button">Initiated</button></th>
+            <th data-field="verification" data-sort="verification" data-tip="Plots waiting for patwari verification."><button type="button">Patwari verification</button></th>
+            <th data-field="submitted" data-sort="submitted" data-tip="Plots submitted."><button type="button">Submitted</button></th>
+            <th data-field="registration" data-sort="registration" data-tip="Plots in registration."><button type="button">Registration</button></th>
+            <th data-field="completed" data-sort="completed" data-tip="Plots with registry completed."><button type="button">Completed</button></th>
+            <th data-field="pct" data-sort="pct" data-tip="Completed plots ÷ total plots."><button type="button">% completed</button></th>
+            <th data-field="d_completed" data-sort="d_completed" data-tip="Completed plots added since the previous update day."><button type="button">Change</button></th>
+            <th data-field="idle" data-sort="idle" data-tip="How many updates in a row this village has not changed. Red chip: 3 or more (stuck)."><button type="button">Updates with no change</button></th>
           </tr>
         </thead>
         <tbody data-draw="vtable"></tbody>
@@ -786,8 +838,8 @@ function lineChart(el, st, rows, series, H) {
   const labels = [];
   for (const k of series) {
     const line = d3.line().x((r) => x(SV.toDate(r.date))).y((r) => y(r[k.key]));
-    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
-    s.append('circle').attr('cx', x(d1)).attr('cy', y(last[k.key])).attr('r', 3.5).style('fill', k.color);
+    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', 3).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    s.append('circle').attr('cx', x(d1)).attr('cy', y(last[k.key])).attr('r', 5).style('fill', k.color);
     labels.push({ y: y(last[k.key]), text: k.label + ' ' + SV.fmt(last[k.key]) });
   }
   labels.sort((a, b) => a.y - b.y);
@@ -795,7 +847,7 @@ function lineChart(el, st, rows, series, H) {
   s.append('g').selectAll('text').data(labels).join('text').attr('x', x(d1) + 8).attr('y', (d) => d.y).attr('dy', '0.35em').attr('class', 'sv-strong').text((d) => d.text);
   const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
   const dots = s.append('g');
-  s.append('rect').attr('x', left).attr('y', 0).attr('width', Math.max(1, x.range()[1] - left)).attr('height', H - 24).style('fill', 'transparent')
+  s.append('rect').attr('x', left).attr('y', 0).attr('width', Math.max(1, x.range()[1] - left)).attr('height', H - 24).style('fill', 'transparent').attr('class', 'sv-ov')
     .on('pointermove', (event) => {
       const [mx] = d3.pointer(event);
       const r = rows[d3.leastIndex(rows, (a) => Math.abs(x(SV.toDate(a.date)) - mx))];
@@ -829,7 +881,7 @@ function barChart(el, st, rows, series, H) {
       .attr('x', xi(k.key) + (xi.bandwidth() - bw) / 2).attr('width', bw)
       .attr('y', (r) => y(Math.max(0, r[k.key]))).attr('height', (r) => Math.abs(y(r[k.key]) - y(0))).attr('rx', 2).style('fill', k.color);
   }
-  g.append('rect').attr('x', 0).attr('width', x.bandwidth()).attr('y', 0).attr('height', H - 24).style('fill', 'transparent')
+  g.append('rect').attr('x', 0).attr('width', x.bandwidth()).attr('y', 0).attr('height', H - 24).style('fill', 'transparent').attr('class', 'sv-ov')
     .on('pointermove', (event, r) => t.show(event, r.name + ' · ' + SV.day(r.date), series.map((k) => [series.length > 1 ? k.color : null, k.label, r[k.key] == null ? 'first update' : SV.fmt(r[k.key])])))
     .on('pointerleave', () => t.hide());
 }
@@ -1216,7 +1268,7 @@ dash.draw('lead-trend', (el) => {
   s.append('path').attr('d', line(tehsil)).style('fill', 'none').style('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
   for (const k of series) {
     const dim = st.patwari && k.name !== st.patwari;
-    s.append('path').attr('d', line(k.pts)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', k.name === st.patwari ? 3 : 1.75)
+    s.append('path').attr('d', line(k.pts)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', k.name === st.patwari ? 4 : 2.5)
       .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('opacity', dim ? 0.25 : 0.9);
   }
   const x1 = x.range()[1];
@@ -1224,7 +1276,7 @@ dash.draw('lead-trend', (el) => {
   if (tehsil.length) items.push({ y: y(lastOf(tehsil).pct), color: 'var(--color-fg-muted)', text: 'Tamia tehsil ' + SV.pctF(lastOf(tehsil).pct) });
   endLabels(s, x1 + 8, items, 8, H - 24);
   const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
-  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x1 - x.range()[0])).attr('height', H - 24).style('fill', 'transparent')
+  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x1 - x.range()[0])).attr('height', H - 24).style('fill', 'transparent').attr('class', 'sv-ov')
     .on('pointermove', (event) => {
       const [mx] = d3.pointer(event);
       const d = dates[d3.leastIndex(dates, (a) => Math.abs(x(SV.toDate(a)) - mx))];
@@ -1293,7 +1345,7 @@ dash.draw('lead-gap', (el) => {
     { y: y(last.bottom ?? 0), color: SVL.BOT, text: 'Bottom avg ' + SV.pctF(last.bottom ?? 0) },
     { y: y(last.tehsil ?? 0), color: 'var(--color-fg-muted)', text: 'Tehsil ' + SV.pctF(last.tehsil ?? 0) }], 8, H - 24);
   const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
-  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x.range()[1] - x.range()[0])).attr('height', H - 24).style('fill', 'transparent')
+  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x.range()[1] - x.range()[0])).attr('height', H - 24).style('fill', 'transparent').attr('class', 'sv-ov')
     .on('pointermove', (event) => {
       const [mx] = d3.pointer(event);
       const p = pts[d3.leastIndex(pts, (a) => Math.abs(X(a) - mx))];
@@ -1333,7 +1385,7 @@ dash.draw('lead-multi', (el) => {
     g.append('line').attr('x1', 10).attr('x2', pw - 8).attr('y1', ph - 10).attr('y2', ph - 10).style('stroke', 'var(--cds-chart-axis)');
     g.selectAll('rect.b').data(k.pts.filter((r) => (r.d_completed ?? 0) > 0)).join('rect').attr('class', 'b')
       .attr('x', (r) => x(r.date)).attr('width', x.bandwidth()).attr('y', (r) => y(r.d_completed)).attr('height', (r) => y(0) - y(r.d_completed)).attr('rx', 1).style('fill', k.color);
-    g.append('rect').attr('width', pw).attr('height', ph).style('fill', 'transparent').style('cursor', 'pointer')
+    g.append('rect').attr('width', pw).attr('height', ph).style('fill', 'transparent').attr('class', 'sv-ov').style('cursor', 'pointer')
       .on('click', () => dash.setParams({ patwari: st.patwari === k.name ? null : k.name, village: null }))
       .on('pointermove', (event) => {
         const [mx] = d3.pointer(event);
