@@ -1,0 +1,1602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tamia SVAMITVA Patwari Monitor</title>
+<meta name="description" content="Day-by-day SVAMITVA registry progress for Tamia tehsil, Chhindwara, by patwari and village. Reads live from Google Sheets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  /* Tokens the page code uses. Light first, dark under prefers-color-scheme. */
+  :root {
+    color-scheme: light;
+    --color-bg: #f5f6f3; --color-panel: #ffffff; --color-fg: #1d2420; --color-fg-muted: #5c6660;
+    --color-border-line: #dde1dc; --color-ok: #217a46; --color-warn: #a6620a; --color-bad: #c03a2b;
+    --sv-c1: #2f7d5b; --sv-c2: #3d6fb6; --sv-c3: #c98a1b; --sv-c4: #8a63b8; --sv-c5: #2b9aa8; --sv-c6: #b85a7a; --sv-c7: #6b7f2a; --sv-c8: #7a6a5c;
+    --cds-chart-grid: #e8ebe6; --cds-chart-axis: #b9c0b9; --cds-chart-reference: #7d867f; --cds-chart-muted: #c3c9c2; --cds-chart-status-critical: #c03a2b;
+    --cds-surface-popover: #ffffff; --cds-border: #d3d8d2; --cds-shadow-popover: 0 6px 20px rgba(20, 30, 25, .14); --cds-text-secondary: #5c6660;
+    --font-anthropic-sans: "IBM Plex Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+    --font-anthropic-serif: "Source Serif 4", "Noto Sans Devanagari", Georgia, serif;
+    --cds-font-size-caption: 12px; --cds-font-size-body: 14px; --cds-font-size-heading: 16px; --cds-font-size-title: 28px;
+    --cds-font-weight-medium: 600;
+    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 16px; --cds-gap-xl: 24px;
+    --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 16px; --cds-pad-xl: 24px;
+    --cds-radius: 8px; --cds-dur-slow: .3s; --cds-ease-out: cubic-bezier(.2, .8, .2, 1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --color-bg: #121614; --color-panel: #1a201d; --color-fg: #e7ece8; --color-fg-muted: #9aa59e;
+      --color-border-line: #2c3430; --color-ok: #5cc48a; --color-warn: #e0a24a; --color-bad: #ef7b6d;
+      --sv-c1: #5cb88e; --sv-c2: #78a3e6; --sv-c3: #e2b04f; --sv-c4: #b294e0; --sv-c5: #5cc3cf; --sv-c6: #e08aa8; --sv-c7: #a5bb5a; --sv-c8: #b4a294;
+      --cds-chart-grid: #252c28; --cds-chart-axis: #3d4741; --cds-chart-reference: #8b958e; --cds-chart-muted: #4a544e; --cds-chart-status-critical: #ef7b6d;
+      --cds-surface-popover: #222925; --cds-border: #38423c; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, .5); --cds-text-secondary: #9aa59e;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #121614; --color-panel: #1a201d; --color-fg: #e7ece8; --color-fg-muted: #9aa59e;
+    --color-border-line: #2c3430; --color-ok: #5cc48a; --color-warn: #e0a24a; --color-bad: #ef7b6d;
+    --sv-c1: #5cb88e; --sv-c2: #78a3e6; --sv-c3: #e2b04f; --sv-c4: #b294e0; --sv-c5: #5cc3cf; --sv-c6: #e08aa8; --sv-c7: #a5bb5a; --sv-c8: #b4a294;
+    --cds-chart-grid: #252c28; --cds-chart-axis: #3d4741; --cds-chart-reference: #8b958e; --cds-chart-muted: #4a544e; --cds-chart-status-critical: #ef7b6d;
+    --cds-surface-popover: #222925; --cds-border: #38423c; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, .5); --cds-text-secondary: #9aa59e;
+  }
+  html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font: 14px/1.4 var(--font-anthropic-sans); }
+  [hidden] { display: none !important; }
+  #dash-root { max-width: 1400px; margin-inline: auto; padding-block: 16px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sv-topbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 12px; color: var(--color-fg-muted); }
+  .sv-topbar .sv-loadbad { color: var(--color-bad); }
+  .dash-skeleton:empty { min-height: 120px; border-radius: var(--cds-radius); background: linear-gradient(90deg, var(--cds-chart-grid), var(--color-panel), var(--cds-chart-grid)); background-size: 200% 100%; }
+  @media (prefers-reduced-motion: no-preference) { .dash-skeleton:empty { animation: sv-shimmer 1.4s linear infinite; } }
+  @keyframes sv-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/dash-shim.js"></script>
+<script src="js/calcs.js"></script>
+</head>
+<body>
+<div id="dash-root">
+  <div class="sv-topbar">
+    <span class="sv-loadstate" role="status">Loading data from Google Sheet…</span>
+    <button type="button" class="sv-btn sv-refresh">Refresh data</button>
+  </div>
+<style>
+  .sv { --sv-font: var(--font-anthropic-sans), "Noto Sans Devanagari", "Mangal", system-ui, sans-serif; font-family: var(--sv-font); display: grid; gap: var(--cds-gap-xl); }
+  .sv h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .sv h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .sv h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .sv p { margin: 0; }
+  .sv-head { display: grid; gap: var(--cds-gap-sm); }
+  .sv-take { color: var(--color-fg-muted); max-width: 70ch; line-height: 1.5; }
+  .sv-take b { color: var(--color-fg); font-weight: 600; }
+  .sv-filters { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: flex-end; padding: var(--cds-pad-md); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .sv-filters label { display: grid; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); min-width: 0; }
+  .sv-filters select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); max-width: 16rem; }
+  .sv-btn { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: transparent; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-md); cursor: pointer; }
+  .sv-btn:hover { background: var(--color-bg); }
+  .sv :is(select, button, input):focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .sv-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+  .sv-tile { display: grid; gap: var(--cds-gap-xs); align-content: start; padding: var(--cds-pad-lg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .sv-tile .sv-lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .sv-tile .sv-kv { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .sv-tile .sv-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .sv-tile.sv-watch { border-color: var(--color-warn); }
+  .sv .sv-up { color: var(--color-ok); }
+  .sv .sv-down { color: var(--color-bad); }
+  .sv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+  .sv-card { display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; padding: var(--cds-pad-lg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .sv-card.sv-wide { grid-column: 1 / -1; }
+  .sv-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+  .sv-chart { position: relative; min-width: 0; }
+  .sv-chart svg { display: block; overflow: visible; }
+  .sv-chart text { font-family: var(--sv-font); fill: var(--color-fg-muted); font-size: 11px; }
+  .sv-chart .sv-strong { fill: var(--color-fg); }
+  .sv-chart .grid line { stroke: var(--cds-chart-grid); }
+  .sv-chart .axis path, .sv-chart .axis line { stroke: var(--cds-chart-axis); }
+  .sv-h280 { min-height: 280px; }
+  .sv-h220 { min-height: 220px; }
+  .sv-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; display: grid; gap: 2px; }
+  .sv-tip[hidden] { display: none; }
+  .sv-tip .sv-tip-h { color: var(--cds-text-secondary); }
+  .sv-tip .sv-sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+  .sv-fail { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .sv-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+  .sv-tablebar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; justify-content: space-between; }
+  .sv-tablebar input { font: inherit; color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); min-width: 0; width: min(100%, 16rem); }
+  .sv-tbox { max-height: 34rem; overflow: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+  .sv table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .sv th { position: sticky; top: 0; z-index: 1; background: var(--color-panel); text-align: right; font-weight: var(--cds-font-weight-medium); border-bottom: 1px solid var(--color-border-line); padding: 0; white-space: nowrap; }
+  .sv th:first-child, .sv td:first-child, .sv th.sv-l, .sv td.sv-l { text-align: left; }
+  .sv th button { font: inherit; color: var(--color-fg-muted); background: none; border: 0; padding: var(--cds-pad-xs) var(--cds-pad-sm); cursor: pointer; width: 100%; text-align: inherit; }
+  .sv th[aria-sort] button { color: var(--color-fg); }
+  .sv th[aria-sort="ascending"] button::after { content: " ↑"; }
+  .sv th[aria-sort="descending"] button::after { content: " ↓"; }
+  .sv th.sv-hl, .sv td.sv-hl { background: color-mix(in srgb, var(--color-warn) 12%, transparent); }
+  .sv td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
+  .sv tbody tr { cursor: pointer; }
+  .sv tbody tr:hover td { background: var(--color-bg); }
+  .sv tbody tr.sv-sel td { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .sv-pctcell { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; }
+  .sv-pctbar { display: inline-block; width: 48px; height: 6px; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; }
+  .sv-pctbar > span { display: block; height: 100%; border-radius: 3px; }
+  .sv-chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: var(--cds-font-size-caption); border: 1px solid currentColor; }
+  .sv-chip.sv-ok { color: var(--color-ok); }
+  .sv-chip.sv-warn { color: var(--color-warn); }
+  .sv-chip.sv-bad { color: var(--color-bad); }
+  .sv-chip.sv-mute { color: var(--color-fg-muted); }
+  .sv dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px var(--cds-gap-md); margin: 0; font-size: var(--cds-font-size-caption); }
+  .sv dt { font-weight: var(--cds-font-weight-medium); }
+  .sv dd { margin: 0; color: var(--color-fg-muted); }
+  .sv-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+  .sv-tab { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); cursor: pointer; margin-bottom: -1px; }
+  .sv-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .sv-page { display: grid; gap: var(--cds-gap-xl); }
+  .sv-filters .sv-note { align-self: center; max-width: 40ch; }
+  .sv tr.sv-top td:first-child { box-shadow: inset 3px 0 0 var(--color-ok); }
+  .sv tr.sv-bot td:first-child { box-shadow: inset 3px 0 0 var(--color-bad); }
+  .sv tr.sv-split td { border-top: 2px solid var(--color-border-line); }
+  .sv-ltable th button { cursor: default; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  [data-dash-source-state=empty] { color: transparent; }
+</style>
+
+<div class="sv">
+  <header class="sv-head" id="top">
+    <h1>Tamia SVAMITVA patwari monitor</h1>
+    <p class="sv-take">As of <b data-draw="asof">—</b>, <b data-draw="scopename">—</b> has <b data-draw="kpi" data-k="completed">—</b> of <b data-draw="kpi" data-k="plots">—</b> plots with registry completed (<b data-draw="kpi" data-k="pct">—</b>), <b data-draw="kpid" data-k="d_completed">—</b> since <span data-draw="prev">—</span>. <b data-draw="kpi" data-k="stuck">—</b> villages have shown no change for 3 or more updates in a row.</p>
+  </header>
+
+  <section class="sv-filters" id="filters" aria-label="Filters">
+    <label>As of date <select id="f-asof" data-draw="f-asof" data-source="scope_daily"></select></label>
+    <label>Trend from <select id="f-from" data-draw="f-from" data-source="scope_daily"></select></label>
+    <label>Trend to <select id="f-to" data-draw="f-to" data-source="scope_daily"></select></label>
+    <label>Patwari <select id="f-patwari" data-draw="f-patwari" data-source="scope_daily"></select></label>
+    <label>Village <select id="f-village" data-draw="f-village" data-source="village_daily"></select></label>
+    <label>Stage to fix
+      <select id="f-stage" class="sv-stage">
+        <option value="">All stages</option>
+        <option value="not_started">Not started</option>
+        <option value="initiated">Registry initiated</option>
+        <option value="verification">Patwari verification</option>
+        <option value="submitted">Submitted</option>
+        <option value="registration">Registration</option>
+      </select>
+    </label>
+    <button type="button" class="sv-btn sv-reset" id="f-reset">Reset filters</button>
+  </section>
+
+  <nav class="sv-tabs" aria-label="Pages">
+    <button type="button" class="sv-tab" id="tab-overview" data-tab="overview" aria-selected="true">Overview</button>
+    <button type="button" class="sv-tab" id="tab-leaders" data-tab="leaders" aria-selected="false">Top &amp; bottom patwaris</button>
+    <button type="button" class="sv-tab" id="tab-dod" data-tab="dod" aria-selected="false">Previous vs current day</button>
+  </nav>
+
+  <div class="sv-page" id="leaders" hidden>
+    <section class="sv-filters" id="rank-options" aria-label="Ranking options">
+      <label>Rank patwaris by
+        <select id="r-by" class="sv-rankby">
+          <option value="gain_pts">% points gained in trend range</option>
+          <option value="plots_done">Plots completed in trend range</option>
+          <option value="per_update">Plots completed per update</option>
+          <option value="pct_to">% completed on trend end date</option>
+        </select>
+      </label>
+      <label>How many in each group
+        <select id="r-n" class="sv-topn">
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+        </select>
+      </label>
+      <p class="sv-note">Uses the trend dates above, <b data-draw="rng" data-end="from">—</b> to <b data-draw="rng" data-end="to">—</b>. Change them to compare any period, for example one week.</p>
+    </section>
+
+    <section class="sv-grid" id="lead-groups" aria-label="Top and bottom">
+      <article class="sv-card" id="top-card">
+        <h2>Top patwaris</h2>
+        <p class="sv-note">Highest on the chosen measure. Click a bar to filter the page to that patwari.</p>
+        <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-bars" data-group="top" data-source="patwari_range"></div>
+      </article>
+      <article class="sv-card" id="bottom-card">
+        <h2>Bottom patwaris</h2>
+        <p class="sv-note">Lowest on the chosen measure, lowest first. These need follow-up.</p>
+        <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-bars" data-group="bottom" data-source="patwari_range"></div>
+      </article>
+      <article class="sv-card sv-wide" id="lead-trend-card">
+        <h2>Day-by-day % completed, top vs bottom</h2>
+        <p class="sv-note">Green lines are top patwaris, red lines are bottom patwaris, and the dashed line is Tamia tehsil overall. Hover for each day's numbers.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-trend" data-source="scope_daily patwari_range"></div>
+      </article>
+      <article class="sv-card" id="lead-slope-card">
+        <h2>Start vs end of the range</h2>
+        <p class="sv-note">Each line joins a patwari's % completed on the start date to the end date. A steeper line means faster progress.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-slope" data-source="patwari_range"></div>
+      </article>
+      <article class="sv-card" id="lead-gap-card">
+        <h2>Gap between top and bottom groups</h2>
+        <p class="sv-note">Average % completed of the top group and the bottom group on each update day. A widening gap means the bottom group is falling further behind.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="lead-gap" data-source="scope_daily patwari_range"></div>
+      </article>
+      <article class="sv-card sv-wide" id="lead-multi-card">
+        <h2>Plots completed each update, per patwari</h2>
+        <p class="sv-note">One small chart per patwari, all on the same scale, so bar heights compare directly. Top group first, then bottom group.</p>
+        <div class="sv-chart sv-h220 dash-skeleton" data-draw="lead-multi" data-source="scope_daily patwari_range"></div>
+      </article>
+    </section>
+
+    <section class="sv-card" id="lead-table">
+      <div class="sv-tablebar">
+        <h2>Top and bottom patwaris compared</h2>
+        <span class="sv-note">Green edge: top group. Red edge: bottom group. Click a row to filter the page.</span>
+      </div>
+      <div class="sv-tbox">
+        <table class="sv-ltable" data-source="patwari_range" data-row-key="patwari,from,to">
+          <thead>
+            <tr>
+              <th data-field="patwari"><button type="button" tabindex="-1">Patwari</button></th>
+              <th data-field="villages"><button type="button" tabindex="-1">Villages</button></th>
+              <th data-field="plots"><button type="button" tabindex="-1">Plots</button></th>
+              <th data-field="pct_from"><button type="button" tabindex="-1">% at start</button></th>
+              <th data-field="pct_to"><button type="button" tabindex="-1">% at end</button></th>
+              <th data-field="gain_pts"><button type="button" tabindex="-1">Gain</button></th>
+              <th data-field="plots_done"><button type="button" tabindex="-1">Plots completed</button></th>
+              <th data-field="per_update"><button type="button" tabindex="-1">Per update</button></th>
+              <th data-field="verification"><button type="button" tabindex="-1">Pending verification</button></th>
+              <th data-field="not_started"><button type="button" tabindex="-1">Not started</button></th>
+              <th data-field="stuck"><button type="button" tabindex="-1">Stuck villages</button></th>
+            </tr>
+          </thead>
+          <tbody data-draw="ltable"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="sv-page" id="dod" hidden>
+    <p class="sv-take">Comparing <b data-draw="asof">—</b> with the previous update, <b data-draw="prev">—</b>, for <b data-draw="dod-scope">—</b>. Change the As of date above to compare any two days in a row. Pick a patwari above to see only that patwari in the cards and stage chart.</p>
+
+    <section class="sv-tiles" id="dod-summary" aria-label="Previous vs current day summary">
+      <div class="sv-tile">
+        <span class="sv-lab">Plots completed on previous day</span>
+        <span class="sv-kv" data-draw="dodk" data-k="work_prev">—</span>
+        <span class="sv-sub">Work done on the previous update</span>
+      </div>
+      <div class="sv-tile">
+        <span class="sv-lab">Plots completed on current day</span>
+        <span class="sv-kv" data-draw="dodk" data-k="work_today">—</span>
+        <span class="sv-sub">Work done on the as-of date</span>
+      </div>
+      <div class="sv-tile">
+        <span class="sv-lab">Change in daily work</span>
+        <span class="sv-kv" data-draw="dodk" data-k="d_work">—</span>
+        <span class="sv-sub">Current day minus previous day</span>
+      </div>
+      <div class="sv-tile">
+        <span class="sv-lab">% of plots completed</span>
+        <span class="sv-kv" data-draw="dodk" data-k="pct">—</span>
+        <span class="sv-sub"><span data-draw="dodk" data-k="prev_pct">—</span> on previous day</span>
+      </div>
+      <div class="sv-tile sv-watch">
+        <span class="sv-lab">Pending patwari verification</span>
+        <span class="sv-kv" data-draw="dodk" data-k="verification">—</span>
+        <span class="sv-sub"><span data-draw="dodk" data-k="prev_verification">—</span> on previous day</span>
+      </div>
+      <div class="sv-tile">
+        <span class="sv-lab">Villages moved</span>
+        <span class="sv-kv" data-draw="dodk" data-k="moved">—</span>
+        <span class="sv-sub"><span data-draw="dodk" data-k="prev_moved">—</span> on previous day</span>
+      </div>
+    </section>
+
+    <section class="sv-grid" id="dod-charts" aria-label="Previous vs current day charts">
+      <article class="sv-card sv-wide" id="dod-work-card">
+        <h2>Daily work by patwari: previous day vs current day</h2>
+        <p class="sv-note">Plots completed on each day. Grey bar: previous day. Colored bar: current day, green if more than the previous day, red if less. Sorted by current day's work. Click a patwari to filter.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-work" data-source="patwari_dod"></div>
+      </article>
+      <article class="sv-card" id="dod-dumb-card">
+        <h2>% completed: previous day → current day</h2>
+        <p class="sv-note">Grey dot: previous day. Colored dot: current day. A longer line means a bigger jump.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-dumb" data-source="patwari_dod"></div>
+      </article>
+      <article class="sv-card" id="dod-side-card">
+        <h2>Stage changes since previous day</h2>
+        <p class="sv-note">Plots in each stage on the previous day and the current day, for the tehsil or the patwari picked above.</p>
+        <div class="sv-chart sv-h280 dash-skeleton" data-draw="dod-stage" data-source="patwari_dod"></div>
+        <h3>Patwaris faster, slower or with no work</h3>
+        <p class="sv-note">Faster means more plots completed than on the previous day.</p>
+        <div class="sv-chart dash-skeleton" data-draw="dod-trend" data-source="patwari_dod"></div>
+      </article>
+    </section>
+
+    <section class="sv-card" id="dod-matrix">
+      <div class="sv-tablebar">
+        <h2>Patwari matrix: previous vs current day</h2>
+        <span class="sv-note">Change columns are shaded: green for progress, red for going back. Click a column to sort, or a row to filter.</span>
+      </div>
+      <div class="sv-tbox">
+        <table class="sv-dtable" data-source="patwari_dod" data-row-key="scope,date">
+          <thead>
+            <tr>
+              <th data-field="name" data-sort="name"><button type="button">Patwari</button></th>
+              <th data-field="trend" data-sort="trend" class="sv-l"><button type="button">Status</button></th>
+              <th data-field="work_prev" data-sort="work_prev"><button type="button">Work prev day</button></th>
+              <th data-field="work_today" data-sort="work_today"><button type="button">Work current day</button></th>
+              <th data-field="d_work" data-sort="d_work"><button type="button">Change in work</button></th>
+              <th data-field="prev_completed" data-sort="prev_completed"><button type="button">Completed prev</button></th>
+              <th data-field="completed" data-sort="completed"><button type="button">Completed now</button></th>
+              <th data-field="prev_pct" data-sort="prev_pct"><button type="button">% prev</button></th>
+              <th data-field="pct" data-sort="pct"><button type="button">% now</button></th>
+              <th data-field="d_pct" data-sort="d_pct"><button type="button">Change in %</button></th>
+              <th data-field="prev_verification" data-sort="prev_verification"><button type="button">Verification prev</button></th>
+              <th data-field="verification" data-sort="verification"><button type="button">Verification now</button></th>
+              <th data-field="d_verification" data-sort="d_verification"><button type="button">Change in verification</button></th>
+              <th data-field="d_initiated" data-sort="d_initiated"><button type="button">Change in initiated</button></th>
+              <th data-field="d_submitted" data-sort="d_submitted"><button type="button">Change in submitted</button></th>
+              <th data-field="d_registration" data-sort="d_registration"><button type="button">Change in registration</button></th>
+              <th data-field="d_not_started" data-sort="d_not_started"><button type="button">Change in not started</button></th>
+              <th data-field="moved" data-sort="moved"><button type="button">Villages moved</button></th>
+              <th data-field="stuck" data-sort="stuck"><button type="button">Stuck villages</button></th>
+            </tr>
+          </thead>
+          <tbody data-draw="dtable"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="sv-page" id="overview">
+  <section class="sv-tiles" id="summary" aria-label="Summary">
+    <div class="sv-tile">
+      <span class="sv-lab">Registry completed (plots)</span>
+      <span class="sv-kv" data-draw="kpi" data-k="completed">—</span>
+      <span class="sv-sub"><span data-draw="kpid" data-k="d_completed">—</span> since previous update</span>
+    </div>
+    <div class="sv-tile">
+      <span class="sv-lab">% of plots completed</span>
+      <span class="sv-kv" data-draw="kpi" data-k="pct">—</span>
+      <span class="sv-sub"><span data-draw="kpid" data-k="d_pct">—</span> since previous update</span>
+    </div>
+    <div class="sv-tile sv-watch">
+      <span class="sv-lab">Pending patwari verification</span>
+      <span class="sv-kv" data-draw="kpi" data-k="verification">—</span>
+      <span class="sv-sub">Plots waiting on the patwari</span>
+    </div>
+    <div class="sv-tile">
+      <span class="sv-lab">Other registry stages</span>
+      <span class="sv-kv" data-draw="kpi" data-k="pending_other">—</span>
+      <span class="sv-sub">Initiated, submitted or in registration</span>
+    </div>
+    <div class="sv-tile">
+      <span class="sv-lab">Not started</span>
+      <span class="sv-kv" data-draw="kpi" data-k="not_started">—</span>
+      <span class="sv-sub">Plots with no registry yet</span>
+    </div>
+    <div class="sv-tile">
+      <span class="sv-lab">Stuck villages</span>
+      <span class="sv-kv" data-draw="kpi" data-k="stuck">—</span>
+      <span class="sv-sub"><span data-draw="kpi" data-k="moved">—</span> of <span data-draw="kpi" data-k="villages">—</span> villages moved since previous update</span>
+    </div>
+  </section>
+
+  <section class="sv-grid" id="stages" aria-label="Stages">
+    <article class="sv-card" id="funnel-card">
+      <h2>Where plots are now</h2>
+      <p class="sv-note">Plots in each registry stage on the as-of date. Each plot sits in one stage. The stage picked under "Stage to fix" is highlighted.</p>
+      <div class="sv-chart sv-h220 dash-skeleton" data-draw="funnel" data-source="scope_daily"></div>
+    </article>
+    <article class="sv-card" id="donut-card">
+      <h2>Share of plots by stage</h2>
+      <p class="sv-note">The same plots as a share of the total.</p>
+      <div class="sv-chart sv-h220 dash-skeleton" data-draw="donut" data-source="scope_daily"></div>
+    </article>
+  </section>
+
+  <section class="sv-grid" id="trend" aria-label="Day by day">
+    <article class="sv-card sv-wide" id="trend-card">
+      <h2>Day-by-day progress</h2>
+      <p class="sv-note">Plots completed, in the registry process, and not started, on each update day in the trend range. Days with no update in the sheet are skipped.</p>
+      <div class="sv-chart sv-h280 dash-skeleton" data-draw="trend" data-source="scope_daily"></div>
+    </article>
+    <article class="sv-card" id="daily-card">
+      <h2>Plots completed each update</h2>
+      <p class="sv-note">Change in completed plots since the previous update day.</p>
+      <div class="sv-chart sv-h220 dash-skeleton" data-draw="daily" data-source="scope_daily"></div>
+    </article>
+    <article class="sv-card" id="moved-card">
+      <h2>Villages moving vs stuck</h2>
+      <p class="sv-note">Villages with any stage change since the previous update, and villages with no change for 3 or more updates that are not yet fully completed.</p>
+      <div class="sv-chart sv-h220 dash-skeleton" data-draw="moved" data-source="scope_daily"></div>
+    </article>
+  </section>
+
+  <section class="sv-grid" id="patwaris" aria-label="Patwaris">
+    <article class="sv-card" id="rank-card">
+      <h2>Patwari ranking</h2>
+      <p class="sv-note">Each patwari's plots by stage on the as-of date, sorted by % completed. Click a bar to filter the page to that patwari.</p>
+      <div class="sv-chart sv-h280 dash-skeleton" data-draw="rank" data-source="scope_daily"></div>
+    </article>
+    <article class="sv-card" id="heat-card">
+      <h2>% completed by patwari, day by day</h2>
+      <p class="sv-note">Darker cells mean more plots completed. Rows follow the ranking order. Hover for the day's numbers.</p>
+      <div class="sv-chart sv-h280 dash-skeleton" data-draw="heat" data-source="scope_daily"></div>
+    </article>
+  </section>
+
+  <section class="sv-card" id="patwari-table">
+    <div class="sv-tablebar">
+      <h2>Patwari table</h2>
+      <span class="sv-note">On the as-of date. Click a column to sort, or a row to filter the page.</span>
+    </div>
+    <div class="sv-tbox">
+      <table class="sv-ptable" data-source="scope_daily" data-row-key="scope,date">
+        <thead>
+          <tr>
+            <th data-field="name" data-sort="name"><button type="button">Patwari</button></th>
+            <th data-field="villages" data-sort="villages"><button type="button">Villages</button></th>
+            <th data-field="plots" data-sort="plots"><button type="button">Plots</button></th>
+            <th data-field="not_started" data-sort="not_started"><button type="button">Not started</button></th>
+            <th data-field="initiated" data-sort="initiated"><button type="button">Initiated</button></th>
+            <th data-field="verification" data-sort="verification"><button type="button">Patwari verification</button></th>
+            <th data-field="submitted" data-sort="submitted"><button type="button">Submitted</button></th>
+            <th data-field="registration" data-sort="registration"><button type="button">Registration</button></th>
+            <th data-field="completed" data-sort="completed"><button type="button">Completed</button></th>
+            <th data-field="pct" data-sort="pct"><button type="button">% completed</button></th>
+            <th data-field="d_completed" data-sort="d_completed"><button type="button">Change</button></th>
+            <th data-field="moved" data-sort="moved"><button type="button">Villages moved</button></th>
+            <th data-field="stuck" data-sort="stuck"><button type="button">Stuck villages</button></th>
+          </tr>
+        </thead>
+        <tbody data-draw="ptable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sv-card" id="village-table">
+    <div class="sv-tablebar">
+      <h2>Villages to follow up</h2>
+      <input type="search" id="v-search" class="sv-vsearch" placeholder="Search village or patwari" aria-label="Search villages">
+    </div>
+    <p class="sv-note">On the as-of date, for the patwari and village picked above. With a stage picked, only villages with plots in that stage are listed, most first. Otherwise the longest-stuck villages come first.</p>
+    <div class="sv-tbox">
+      <table class="sv-vtable" data-source="village_daily" data-row-key="date,lgd">
+        <thead>
+          <tr>
+            <th data-field="village" data-sort="village"><button type="button">Village</button></th>
+            <th data-field="patwari" data-sort="patwari" class="sv-l"><button type="button">Patwari</button></th>
+            <th data-field="plots" data-sort="plots"><button type="button">Plots</button></th>
+            <th data-field="not_started" data-sort="not_started"><button type="button">Not started</button></th>
+            <th data-field="initiated" data-sort="initiated"><button type="button">Initiated</button></th>
+            <th data-field="verification" data-sort="verification"><button type="button">Patwari verification</button></th>
+            <th data-field="submitted" data-sort="submitted"><button type="button">Submitted</button></th>
+            <th data-field="registration" data-sort="registration"><button type="button">Registration</button></th>
+            <th data-field="completed" data-sort="completed"><button type="button">Completed</button></th>
+            <th data-field="pct" data-sort="pct"><button type="button">% completed</button></th>
+            <th data-field="d_completed" data-sort="d_completed"><button type="button">Change</button></th>
+            <th data-field="idle" data-sort="idle"><button type="button">Updates with no change</button></th>
+          </tr>
+        </thead>
+        <tbody data-draw="vtable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  </div>
+
+  <section class="sv-card" id="definitions">
+    <h2>How the numbers are worked out</h2>
+    <dl>
+      <dt>Source</dt><dd>Google Sheet "SVAMITVA", Sheet1. One row per village per update day. Add new rows with a new Date and the dashboard picks them up when it is opened or refreshed.</dd>
+      <dt>Stages</dt><dd>Registry initiated → Patwari verification → Submitted → Registration → Completed. The sheet counts each plot in one stage only.</dd>
+      <dt>Not started</dt><dd>Plots minus the plots in all five stages.</dd>
+      <dt>% completed</dt><dd>Completed plots ÷ total plots.</dd>
+      <dt>Change</dt><dd>Completed plots now minus completed plots on the previous update day in the sheet.</dd>
+      <dt>Moved</dt><dd>A village where any stage count changed since the previous update day.</dd>
+      <dt>Top and bottom</dt><dd>Patwaris ranked on the measure picked on the Top &amp; bottom tab, between the trend from and to dates. Bottom patwaris are listed lowest first.</dd>
+      <dt>Work on a day</dt><dd>Plots completed on that update day minus plots completed on the update day before. Faster means more work than on the previous day, Slower less, No work none.</dd>
+      <dt>Stuck</dt><dd>A village with no change for 3 or more updates in a row that is not yet 100% completed.</dd>
+    </dl>
+  </section>
+</div>
+
+<script>
+window.SV = (() => {
+  const STAGES = [
+    { key: 'not_started', label: 'Not started' },
+    { key: 'initiated', label: 'Registry initiated' },
+    { key: 'verification', label: 'Patwari verification' },
+    { key: 'submitted', label: 'Submitted' },
+    { key: 'registration', label: 'Registration' },
+    { key: 'completed', label: 'Completed' },
+  ];
+  const STAGE_COLOR = { not_started: 'var(--cds-chart-muted)', initiated: dash.colors[3], verification: dash.colors[2], submitted: dash.colors[4], registration: dash.colors[1], completed: dash.colors[0] };
+  const fmt = d3.format(',');
+  const pctF = d3.format('.1%');
+  const dayF = d3.utcFormat('%-d %b');
+  const toDate = (s) => new Date(s + 'T00:00:00Z');
+  const day = (s) => (s ? dayF(toDate(s)) : '—');
+  const signed = (n) => (n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '±') + fmt(Math.abs(n)));
+  const pts = (n) => (n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '±') + d3.format('.1f')(Math.abs(n) * 100) + ' pts');
+  const enc = (o) => Object.entries(o).map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
+  const cache = { scope: null, sIdx: null, village: null, vIdx: null };
+
+  function state() {
+    const s = dash.data('scope_daily');
+    if (s.status !== 'ok') return { status: s.status };
+    const rows = s.data;
+    if (cache.scope !== rows) {
+      cache.scope = rows;
+      cache.sIdx = new Map(rows.map((r) => [r.scope + '|' + r.date, r]));
+      cache.dates = [...new Set(rows.filter((r) => r.scope === 'all').map((r) => r.date))].sort();
+      cache.patwaris = [...new Set(rows.filter((r) => r.scope.startsWith('p:')).map((r) => r.patwari))].sort((a, b) => a.localeCompare(b));
+    }
+    const dates = cache.dates;
+    if (!dates.length) return { status: 'empty' };
+    const p = dash.params();
+    const last = dates[dates.length - 1];
+    const asof = dates.includes(p.asof) ? p.asof : last;
+    let from = dates.includes(p.from) ? p.from : dates[0];
+    let to = dates.includes(p.to) ? p.to : last;
+    if (from > to) [from, to] = [to, from];
+    const patwari = cache.patwaris.includes(p.patwari) ? p.patwari : null;
+    const village = p.village && cache.sIdx.has('v:' + p.village + '|' + asof) ? p.village : null;
+    const scope = village ? 'v:' + village : patwari ? 'p:' + patwari : 'all';
+    const i = dates.indexOf(asof);
+    return { status: 'ok', rows, dates, patwaris: cache.patwaris, asof, prev: i > 0 ? dates[i - 1] : null, from, to, scope, patwari, village, stage: p.stage || null,
+      row: (sc, d) => cache.sIdx.get(sc + '|' + d) };
+  }
+
+  function villages() {
+    const v = dash.data('village_daily');
+    if (v.status !== 'ok') return { status: v.status, rows: [] };
+    return { status: 'ok', rows: v.data };
+  }
+
+  function placeholder(el, status, chart) {
+    el.replaceChildren();
+    el.classList.toggle('dash-skeleton', status === 'loading' || status === 'connect');
+    if (chart && (status === 'error' || status === 'declined' || status === 'missing')) {
+      const f = document.createElement('div');
+      f.className = 'sv-fail';
+      f.textContent = 'Failed to load';
+      el.append(f);
+    } else if (!chart) {
+      el.textContent = '—';
+    }
+  }
+
+  function mark(el, text, where, field, source, cls) {
+    const s = document.createElement('span');
+    s.dataset.source = source || 'scope_daily';
+    s.dataset.field = field;
+    s.dataset.where = enc(where);
+    if (cls) s.className = cls;
+    s.textContent = text;
+    el.classList.remove('dash-skeleton');
+    el.replaceChildren(s);
+  }
+
+  function tip(el) {
+    let t = el.querySelector(':scope > .sv-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'sv-tip'; t.hidden = true; el.append(t); }
+    return {
+      show(event, head, lines) {
+        const h = document.createElement('div');
+        h.className = 'sv-tip-h';
+        h.textContent = head;
+        const ls = lines.map(([color, label, value]) => {
+          const d = document.createElement('div');
+          if (color) { const sw = document.createElement('span'); sw.className = 'sv-sw'; sw.style.background = color; d.append(sw); }
+          d.append(label + ': ' + value);
+          return d;
+        });
+        t.replaceChildren(h, ...ls);
+        t.hidden = false;
+        const box = el.getBoundingClientRect();
+        const x = event.clientX - box.left, y = event.clientY - box.top;
+        const w = t.offsetWidth, hgt = t.offsetHeight;
+        t.style.left = Math.max(0, Math.min(box.width - w, x + 12 > box.width - w ? x - w - 12 : x + 12)) + 'px';
+        t.style.top = Math.max(0, Math.min(el.clientHeight - hgt, y - hgt - 8 < 0 ? y + 12 : y - hgt - 8)) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  }
+
+  function svg(el, width, height) {
+    el.classList.remove('dash-skeleton');
+    const s = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${height}`).attr('height', height);
+    el.replaceChildren(s.node());
+    return s;
+  }
+
+  function textWidth(s, strings, size) {
+    const g = s.append('g').attr('opacity', 0);
+    let w = 0;
+    for (const str of strings) {
+      const t = g.append('text').attr('font-size', size || 11).text(str);
+      w = Math.max(w, t.node().getComputedTextLength());
+    }
+    g.remove();
+    return Math.ceil(w);
+  }
+
+  function cleanAxis(g) { g.attr('font-size', null).attr('font-family', null).classed('axis', true); }
+
+  return { STAGES, STAGE_COLOR, fmt, pctF, day, toDate, signed, pts, enc, state, villages, placeholder, mark, tip, svg, textWidth, cleanAxis };
+})();
+</script>
+
+<script>
+// Filters
+const setDefaults = () => {};
+for (const b of document.querySelectorAll('.sv-reset')) {
+  b.addEventListener('click', () => { dash.resetParams(); setDefaults(); });
+}
+for (const sel of document.querySelectorAll('.sv-stage')) {
+  sel.addEventListener('change', () => dash.setParams({ stage: sel.value || null }));
+}
+dash.onData(() => {
+  const stage = dash.params().stage || '';
+  for (const sel of document.querySelectorAll('.sv-stage')) sel.value = stage;
+});
+
+const dateSelect = (name, param, pick) => dash.draw(name, (sel) => {
+  const st = SV.state();
+  if (st.status !== 'ok') { sel.replaceChildren(); return; }
+  sel.replaceChildren(...st.dates.slice().reverse().map((d) => new Option(SV.day(d), d)));
+  sel.value = pick(st);
+  sel.onchange = () => dash.setParams({ [param]: sel.value });
+});
+dateSelect('f-asof', 'asof', (st) => st.asof);
+dateSelect('f-from', 'from', (st) => st.from);
+dateSelect('f-to', 'to', (st) => st.to);
+
+dash.draw('f-patwari', (sel) => {
+  const st = SV.state();
+  if (st.status !== 'ok') { sel.replaceChildren(); return; }
+  sel.replaceChildren(new Option('All patwaris', ''), ...st.patwaris.map((p) => new Option(p, p)));
+  sel.value = st.patwari || '';
+  sel.onchange = () => dash.setParams({ patwari: sel.value || null, village: null });
+});
+
+dash.draw('f-village', (sel) => {
+  const st = SV.state();
+  const v = SV.villages();
+  if (st.status !== 'ok' || v.status !== 'ok') { sel.replaceChildren(); return; }
+  const list = v.rows.filter((r) => r.date === st.asof && (!st.patwari || r.patwari === st.patwari)).sort((a, b) => a.village.localeCompare(b.village));
+  sel.replaceChildren(new Option(st.patwari ? 'All villages of this patwari' : 'All villages', ''), ...list.map((r) => new Option(r.village + ' (' + r.lgd + ')', r.lgd)));
+  sel.value = st.village || '';
+  sel.onchange = () => dash.setParams({ village: sel.value || null });
+});
+</script>
+
+<script>
+// Headline numbers
+dash.draw('asof', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status);
+  SV.mark(el, SV.day(st.asof), { scope: 'all', date: st.asof }, 'date');
+});
+dash.draw('prev', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok' || !st.prev) return SV.placeholder(el, st.status === 'ok' ? 'empty' : st.status);
+  SV.mark(el, SV.day(st.prev), { scope: 'all', date: st.prev }, 'date');
+});
+dash.draw('scopename', (el) => {
+  const st = SV.state();
+  const r = st.status === 'ok' && st.row(st.scope, st.asof);
+  if (!r) return SV.placeholder(el, st.status);
+  SV.mark(el, r.name, { scope: r.scope, date: r.date }, 'name');
+});
+dash.draw('kpi', (el) => {
+  const st = SV.state();
+  const k = el.dataset.k;
+  const r = st.status === 'ok' && st.row(st.scope, st.asof);
+  if (!r || r[k] == null) return SV.placeholder(el, st.status);
+  SV.mark(el, k === 'pct' ? SV.pctF(r[k]) : SV.fmt(r[k]), { scope: r.scope, date: r.date }, k);
+});
+dash.draw('kpid', (el) => {
+  const st = SV.state();
+  const k = el.dataset.k;
+  const r = st.status === 'ok' && st.row(st.scope, st.asof);
+  if (!r || r[k] == null) return SV.placeholder(el, st.status);
+  const v = r[k];
+  SV.mark(el, k === 'd_pct' ? SV.pts(v) : SV.signed(v), { scope: r.scope, date: r.date }, k, 'scope_daily', v > 0 ? 'sv-up' : v < 0 ? 'sv-down' : '');
+});
+</script>
+
+<script>
+// Stage funnel and donut
+dash.draw('funnel', (el) => {
+  const st = SV.state();
+  const r = st.status === 'ok' && st.row(st.scope, st.asof);
+  if (!r) return SV.placeholder(el, st.status, true);
+  const W = Math.max(280, el.clientWidth), rowH = 32, H = SV.STAGES.length * rowH + 8;
+  const s = SV.svg(el, W, H);
+  const labelW = SV.textWidth(s, SV.STAGES.map((x) => x.label)) + 12;
+  const valueW = SV.textWidth(s, SV.STAGES.map((x) => SV.fmt(r[x.key]) + ' · ' + SV.pctF(r.plots ? r[x.key] / r.plots : 0))) + 10;
+  const x = d3.scaleLinear([0, Math.max(1, r.plots)], [labelW, Math.max(labelW + 40, W - valueW)]);
+  const t = SV.tip(el);
+  const g = s.selectAll('g.row').data(SV.STAGES).join('g').attr('transform', (d, i) => `translate(0,${i * rowH + 4})`);
+  g.append('text').attr('x', 0).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', (d) => (d.key === st.stage ? 'sv-strong' : null)).text((d) => d.label);
+  g.append('rect').attr('x', labelW).attr('y', 6).attr('height', rowH - 12).attr('width', x.range()[1] - labelW).attr('rx', 3).style('fill', 'var(--cds-chart-grid)');
+  g.append('rect').attr('x', labelW).attr('y', 6).attr('height', rowH - 12).attr('rx', 3)
+    .attr('width', (d) => Math.max(r[d.key] > 0 ? 2 : 0, x(r[d.key]) - labelW))
+    .style('fill', (d) => SV.STAGE_COLOR[d.key])
+    .attr('opacity', (d) => (st.stage && d.key !== st.stage ? 0.35 : 1));
+  g.append('text').attr('x', (d) => x(r[d.key]) + 6).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong')
+    .text((d) => SV.fmt(r[d.key]) + ' · ' + SV.pctF(r.plots ? r[d.key] / r.plots : 0));
+  g.on('pointermove', (event, d) => t.show(event, r.name + ' · ' + SV.day(r.date), [[SV.STAGE_COLOR[d.key], d.label, SV.fmt(r[d.key]) + ' plots']]))
+    .on('pointerleave', () => t.hide());
+});
+
+dash.draw('donut', (el) => {
+  const st = SV.state();
+  const r = st.status === 'ok' && st.row(st.scope, st.asof);
+  if (!r) return SV.placeholder(el, st.status, true);
+  const W = Math.max(280, el.clientWidth);
+  const stacked = W < 420;
+  const R = Math.min(100, (stacked ? W : W * 0.45) / 2 - 4);
+  const legendH = SV.STAGES.length * 22;
+  const H = stacked ? R * 2 + 16 + legendH : Math.max(R * 2 + 8, legendH);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const data = SV.STAGES.map((d) => ({ ...d, v: r[d.key] }));
+  const cx = stacked ? W / 2 : R + 4, cy = R + 4;
+  const arcs = d3.pie().value((d) => d.v).sort(null)(data);
+  const arc = d3.arc().innerRadius(R * 0.62).outerRadius(R).padAngle(0.01).cornerRadius(2);
+  s.append('g').attr('transform', `translate(${cx},${cy})`).selectAll('path').data(arcs).join('path')
+    .attr('d', arc).style('fill', (d) => SV.STAGE_COLOR[d.data.key]).attr('opacity', (d) => (st.stage && d.data.key !== st.stage ? 0.35 : 1))
+    .on('pointermove', (event, d) => t.show(event, r.name + ' · ' + SV.day(r.date), [[SV.STAGE_COLOR[d.data.key], d.data.label, SV.fmt(d.data.v) + ' (' + SV.pctF(r.plots ? d.data.v / r.plots : 0) + ')']]))
+    .on('pointerleave', () => t.hide());
+  const c = s.append('g').attr('transform', `translate(${cx},${cy})`).attr('text-anchor', 'middle');
+  c.append('text').attr('dy', '-0.1em').attr('class', 'sv-strong').attr('font-size', 22).style('font-family', 'var(--font-anthropic-serif)').text(SV.pctF(r.pct));
+  c.append('text').attr('dy', '1.3em').text('completed');
+  const lx = stacked ? Math.max(4, W / 2 - 90) : cx + R + 24;
+  const ly = stacked ? R * 2 + 20 : Math.max(0, cy - legendH / 2);
+  const lg = s.append('g').attr('transform', `translate(${lx},${ly})`).selectAll('g').data(data).join('g').attr('transform', (d, i) => `translate(0,${i * 22})`);
+  lg.append('rect').attr('width', 10).attr('height', 10).attr('y', 3).attr('rx', 2).style('fill', (d) => SV.STAGE_COLOR[d.key]);
+  lg.append('text').attr('x', 16).attr('y', 8).attr('dy', '0.35em').text((d) => d.label + ' · ' + SV.pctF(r.plots ? d.v / r.plots : 0));
+});
+</script>
+
+<script>
+// Day-by-day charts
+const rangeRows = (st) => st.dates.filter((d) => d >= st.from && d <= st.to).map((d) => st.row(st.scope, d)).filter(Boolean);
+
+function lineChart(el, st, rows, series, H) {
+  const W = Math.max(280, el.clientWidth);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const maxY = d3.max(rows, (r) => d3.max(series, (k) => r[k.key])) || 1;
+  const y = d3.scaleLinear([0, maxY], [H - 24, 8]).nice();
+  const ticks = y.ticks(5);
+  const left = SV.textWidth(s, ticks.map(SV.fmt)) + 10;
+  const last = rows[rows.length - 1];
+  const right = SV.textWidth(s, series.map((k) => k.label + ' ' + SV.fmt(last[k.key]))) + 14;
+  const d0 = SV.toDate(rows[0].date), d1 = SV.toDate(last.date);
+  const x = d3.scaleUtc(d0 < d1 ? [d0, d1] : [d3.utcDay.offset(d0, -1), d3.utcDay.offset(d0, 1)], [left, Math.max(left + 60, W - right)]);
+  s.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', left).attr('x2', x.range()[1]).attr('y1', y).attr('y2', y);
+  s.append('g').attr('transform', `translate(${left - 4},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(SV.fmt).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+  const nT = Math.max(2, Math.min(rows.length, Math.floor((x.range()[1] - left) / 70)));
+  s.append('g').attr('transform', `translate(0,${H - 24})`).call(d3.axisBottom(x).ticks(nT).tickFormat(d3.utcFormat('%-d %b')).tickSizeOuter(0)).call(SV.cleanAxis);
+  const labels = [];
+  for (const k of series) {
+    const line = d3.line().x((r) => x(SV.toDate(r.date))).y((r) => y(r[k.key]));
+    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    s.append('circle').attr('cx', x(d1)).attr('cy', y(last[k.key])).attr('r', 3.5).style('fill', k.color);
+    labels.push({ y: y(last[k.key]), text: k.label + ' ' + SV.fmt(last[k.key]) });
+  }
+  labels.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + 14);
+  s.append('g').selectAll('text').data(labels).join('text').attr('x', x(d1) + 8).attr('y', (d) => d.y).attr('dy', '0.35em').attr('class', 'sv-strong').text((d) => d.text);
+  const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  const dots = s.append('g');
+  s.append('rect').attr('x', left).attr('y', 0).attr('width', Math.max(1, x.range()[1] - left)).attr('height', H - 24).style('fill', 'transparent')
+    .on('pointermove', (event) => {
+      const [mx] = d3.pointer(event);
+      const r = rows[d3.leastIndex(rows, (a) => Math.abs(x(SV.toDate(a.date)) - mx))];
+      rule.attr('x1', x(SV.toDate(r.date))).attr('x2', x(SV.toDate(r.date))).attr('opacity', 1);
+      dots.selectAll('circle').data(series).join('circle').attr('r', 4).style('fill', (k) => k.color).attr('cx', x(SV.toDate(r.date))).attr('cy', (k) => y(r[k.key]));
+      t.show(event, r.name + ' · ' + SV.day(r.date), series.map((k) => [k.color, k.label, SV.fmt(r[k.key])]));
+    })
+    .on('pointerleave', () => { rule.attr('opacity', 0); dots.selectAll('circle').remove(); t.hide(); });
+}
+
+function barChart(el, st, rows, series, H) {
+  const W = Math.max(280, el.clientWidth);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const lo = Math.min(0, d3.min(rows, (r) => d3.min(series, (k) => r[k.key] ?? 0)) ?? 0);
+  const hi = Math.max(1, d3.max(rows, (r) => d3.max(series, (k) => r[k.key] ?? 0)) ?? 1);
+  const y = d3.scaleLinear([lo, hi], [H - 24, 8]).nice();
+  const ticks = y.ticks(4);
+  const left = SV.textWidth(s, ticks.map(SV.fmt)) + 10;
+  const x = d3.scaleBand(rows.map((r) => r.date), [left, W - 4]).paddingInner(0.25).paddingOuter(0.1);
+  const xi = d3.scaleBand(series.map((k) => k.key), [0, x.bandwidth()]).padding(series.length > 1 ? 0.1 : 0);
+  s.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', left).attr('x2', W - 4).attr('y1', y).attr('y2', y);
+  s.append('g').attr('transform', `translate(${left - 4},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(SV.fmt).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+  const every = Math.max(1, Math.ceil(rows.length / Math.max(1, Math.floor((W - left) / 56))));
+  s.append('g').attr('transform', `translate(0,${y(0)})`).call(d3.axisBottom(x).tickValues(rows.map((r) => r.date).filter((d, i) => i % every === 0)).tickFormat(SV.day).tickSizeOuter(0))
+    .call(SV.cleanAxis).call((g) => g.selectAll('.tick text').attr('transform', `translate(0,${H - 24 - y(0)})`));
+  const bw = Math.min(32, xi.bandwidth());
+  const g = s.append('g').selectAll('g').data(rows).join('g').attr('transform', (r) => `translate(${x(r.date)},0)`);
+  for (const k of series) {
+    g.filter((r) => r[k.key] != null).append('rect')
+      .attr('x', xi(k.key) + (xi.bandwidth() - bw) / 2).attr('width', bw)
+      .attr('y', (r) => y(Math.max(0, r[k.key]))).attr('height', (r) => Math.abs(y(r[k.key]) - y(0))).attr('rx', 2).style('fill', k.color);
+  }
+  g.append('rect').attr('x', 0).attr('width', x.bandwidth()).attr('y', 0).attr('height', H - 24).style('fill', 'transparent')
+    .on('pointermove', (event, r) => t.show(event, r.name + ' · ' + SV.day(r.date), series.map((k) => [series.length > 1 ? k.color : null, k.label, r[k.key] == null ? 'first update' : SV.fmt(r[k.key])])))
+    .on('pointerleave', () => t.hide());
+}
+
+dash.draw('trend', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+  const rows = rangeRows(st);
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  lineChart(el, st, rows, [
+    { key: 'completed', label: 'Completed', color: SV.STAGE_COLOR.completed },
+    { key: 'in_process', label: 'In registry process', color: dash.colors[2] },
+    { key: 'not_started', label: 'Not started', color: 'var(--cds-chart-muted)' },
+  ], 280);
+});
+
+dash.draw('daily', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+  const rows = rangeRows(st);
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  barChart(el, st, rows, [{ key: 'd_completed', label: 'Plots completed', color: SV.STAGE_COLOR.completed }], 220);
+});
+
+dash.draw('moved', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+  const rows = rangeRows(st);
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  barChart(el, st, rows, [
+    { key: 'moved', label: 'Villages moved', color: dash.colors[0] },
+    { key: 'stuck', label: 'Stuck villages', color: 'var(--cds-chart-status-critical)' },
+  ], 220);
+});
+</script>
+
+<script>
+// Patwari ranking and heatmap
+const patwariRows = (st, d) => st.patwaris.map((p) => st.row('p:' + p, d)).filter(Boolean).sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name));
+
+dash.draw('rank', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+  const rows = patwariRows(st, st.asof);
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  const W = Math.max(280, el.clientWidth), rowH = 22, top = 4, H = rows.length * rowH + top + 4;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labelW = Math.min(W * 0.42, SV.textWidth(s, rows.map((r) => r.name)) + 10);
+  const valW = SV.textWidth(s, ['100.0%']) + 8;
+  const x = d3.scaleLinear([0, 1], [labelW, W - valW]);
+  const order = SV.STAGES.slice().reverse();
+  const g = s.selectAll('g.r').data(rows).join('g').attr('transform', (r, i) => `translate(0,${top + i * rowH})`).style('cursor', 'pointer')
+    .attr('opacity', (r) => (st.patwari && r.patwari !== st.patwari ? 0.4 : 1))
+    .on('click', (event, r) => dash.setParams({ patwari: st.patwari === r.patwari ? null : r.patwari, village: null }))
+    .on('pointermove', (event, r) => t.show(event, r.name + ' · ' + SV.day(r.date), order.map((k) => [SV.STAGE_COLOR[k.key], k.label, SV.fmt(r[k.key])]).concat([[null, '% completed', SV.pctF(r.pct)]])))
+    .on('pointerleave', () => t.hide());
+  g.append('text').attr('x', labelW - 8).attr('y', rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end')
+    .attr('class', (r) => (r.patwari === st.patwari ? 'sv-strong' : null))
+    .text((r) => r.name).each(function () {
+      const full = this.textContent; let s2 = full;
+      while (this.getComputedTextLength() > labelW - 12 && s2.length > 4) { s2 = s2.slice(0, -1); this.textContent = s2 + '…'; }
+    });
+  g.each(function (r) {
+    let acc = 0;
+    const sel = d3.select(this);
+    for (const k of order) {
+      const v = r.plots ? r[k.key] / r.plots : 0;
+      sel.append('rect').attr('x', x(acc)).attr('y', 4).attr('height', rowH - 8).attr('width', Math.max(0, x(acc + v) - x(acc))).style('fill', SV.STAGE_COLOR[k.key]);
+      acc += v;
+    }
+  });
+  g.append('text').attr('x', W - valW + 6).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong').text((r) => SV.pctF(r.pct));
+});
+
+dash.draw('heat', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+  const rows = patwariRows(st, st.asof);
+  const dates = st.dates.filter((d) => d >= st.from && d <= st.to);
+  if (!rows.length || !dates.length) return SV.placeholder(el, 'empty', true);
+  const W = Math.max(280, el.clientWidth), rowH = 22, top = 4, bottom = 22, H = rows.length * rowH + top + bottom;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labelW = Math.min(W * 0.38, SV.textWidth(s, rows.map((r) => r.name)) + 10);
+  const x = d3.scaleBand(dates, [labelW, W]).padding(0.06);
+  rows.forEach((r, i) => {
+    const gy = top + i * rowH;
+    s.append('text').attr('x', labelW - 8).attr('y', gy + rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end')
+      .attr('class', r.patwari === st.patwari ? 'sv-strong' : null).text(r.name).each(function () {
+        let s2 = r.name;
+        while (this.getComputedTextLength() > labelW - 12 && s2.length > 4) { s2 = s2.slice(0, -1); this.textContent = s2 + '…'; }
+      });
+    for (const d of dates) {
+      const c = st.row('p:' + r.patwari, d);
+      if (!c) continue;
+      s.append('rect').attr('x', x(d)).attr('y', gy + 2).attr('width', x.bandwidth()).attr('height', rowH - 4).attr('rx', 2)
+        .style('fill', SV.STAGE_COLOR.completed).attr('fill-opacity', 0.06 + 0.94 * Math.min(1, c.pct))
+        .style('stroke', d === st.asof ? 'var(--color-fg)' : 'none').attr('stroke-width', 1)
+        .style('cursor', 'pointer')
+        .on('click', () => dash.setParams({ patwari: r.patwari, village: null, asof: d }))
+        .on('pointermove', (event) => t.show(event, c.name + ' · ' + SV.day(d), [[null, '% completed', SV.pctF(c.pct)], [null, 'Completed', SV.fmt(c.completed) + ' of ' + SV.fmt(c.plots)], [null, 'Change', c.d_completed == null ? 'first update' : SV.signed(c.d_completed)], [null, 'Stuck villages', SV.fmt(c.stuck)]]))
+        .on('pointerleave', () => t.hide());
+    }
+  });
+  const every = Math.max(1, Math.ceil(dates.length / Math.max(1, Math.floor((W - labelW) / 52))));
+  s.append('g').attr('transform', `translate(0,${top + rows.length * rowH + 2})`)
+    .call(d3.axisBottom(x).tickValues(dates.filter((d, i) => i % every === 0)).tickFormat(SV.day).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+});
+</script>
+
+<script>
+// Tables
+const sortState = { ptable: { key: 'pct', dir: 'ascending' }, vtable: { key: null, dir: 'descending' } };
+const searchState = { q: '' };
+
+function cell(tr, text, cls) {
+  const td = document.createElement('td');
+  if (cls) td.className = cls;
+  if (text instanceof Node) td.append(text); else td.textContent = text;
+  tr.append(td);
+  return td;
+}
+function pctCell(v) {
+  const wrap = document.createElement('span');
+  wrap.className = 'sv-pctcell';
+  const bar = document.createElement('span');
+  bar.className = 'sv-pctbar';
+  const fill = document.createElement('span');
+  fill.style.width = Math.round(Math.min(1, v) * 100) + '%';
+  fill.style.background = SV.STAGE_COLOR.completed;
+  bar.append(fill);
+  wrap.append(bar, SV.pctF(v));
+  return wrap;
+}
+function chip(text, kind) {
+  const c = document.createElement('span');
+  c.className = 'sv-chip sv-' + kind;
+  c.textContent = text;
+  return c;
+}
+function sorter(key, dir) {
+  const m = dir === 'ascending' ? 1 : -1;
+  return (a, b) => {
+    const x = a[key], y = b[key];
+    if (typeof x === 'string' || typeof y === 'string') return m * String(x ?? '').localeCompare(String(y ?? ''));
+    return m * ((x ?? -Infinity) - (y ?? -Infinity));
+  };
+}
+function syncHeaders(table, key, dir, stage) {
+  for (const th of table.querySelectorAll('th[data-sort]')) {
+    if (th.dataset.sort === key) th.setAttribute('aria-sort', dir); else th.removeAttribute('aria-sort');
+    th.classList.toggle('sv-hl', !!stage && th.dataset.sort === stage);
+  }
+}
+for (const [cls, name] of [['.sv-ptable', 'ptable'], ['.sv-vtable', 'vtable']]) {
+  for (const table of document.querySelectorAll(cls)) {
+    for (const th of table.querySelectorAll('th[data-sort]')) {
+      th.addEventListener('click', () => {
+        const s = sortState[name];
+        const k = th.dataset.sort;
+        s.dir = s.key === k && s.dir === 'descending' ? 'ascending' : 'descending';
+        s.key = k;
+        dash.draw(name);
+      });
+    }
+    table.addEventListener('click', (event) => {
+      if (event.target.closest('th')) return;
+      const tr = event.target.closest('tr[data-patwari]');
+      if (!tr) return;
+      if (name === 'ptable') dash.setParams({ patwari: dash.params().patwari === tr.dataset.patwari ? null : tr.dataset.patwari, village: null });
+      else dash.setParams({ patwari: tr.dataset.patwari, village: dash.params().village === tr.dataset.lgd ? null : tr.dataset.lgd });
+    });
+  }
+}
+for (const input of document.querySelectorAll('.sv-vsearch')) {
+  input.addEventListener('input', () => { searchState.q = input.value.trim().toLowerCase(); dash.draw('vtable'); });
+}
+
+const STAGE_COLS = ['not_started', 'initiated', 'verification', 'submitted', 'registration', 'completed'];
+
+dash.draw('ptable', (tbody) => {
+  const st = SV.state();
+  tbody.replaceChildren();
+  const table = tbody.closest('table');
+  if (st.status !== 'ok') return;
+  const s = sortState.ptable;
+  const key = s.key || 'pct';
+  const rows = st.patwaris.map((p) => st.row('p:' + p, st.asof)).filter(Boolean).sort(sorter(key, s.dir));
+  if (table) syncHeaders(table, key, s.dir, st.stage);
+  for (const r of rows) {
+    const tr = document.createElement('tr');
+    tr.dataset.key = encodeURIComponent(r.scope) + ',' + encodeURIComponent(r.date);
+    tr.dataset.patwari = r.patwari;
+    if (r.patwari === st.patwari) tr.className = 'sv-sel';
+    cell(tr, r.name);
+    cell(tr, SV.fmt(r.villages));
+    cell(tr, SV.fmt(r.plots));
+    for (const k of STAGE_COLS) cell(tr, SV.fmt(r[k]), st.stage === k ? 'sv-hl' : '');
+    cell(tr, pctCell(r.pct));
+    cell(tr, SV.signed(r.d_completed), r.d_completed > 0 ? 'sv-up' : r.d_completed < 0 ? 'sv-down' : '');
+    cell(tr, SV.fmt(r.moved));
+    cell(tr, SV.fmt(r.stuck), r.stuck > 0 ? 'sv-down' : '');
+    tbody.append(tr);
+  }
+});
+
+dash.draw('vtable', (tbody) => {
+  const st = SV.state();
+  const v = SV.villages();
+  tbody.replaceChildren();
+  const table = tbody.closest('table');
+  if (st.status !== 'ok' || v.status !== 'ok') return;
+  const q = searchState.q;
+  let rows = v.rows.filter((r) => r.date === st.asof && (!st.patwari || r.patwari === st.patwari) && (!st.village || r.lgd === st.village)
+    && (!st.stage || r[st.stage] > 0) && (!q || r.village.toLowerCase().includes(q) || r.patwari.toLowerCase().includes(q) || r.lgd.includes(q)));
+  const s = sortState.vtable;
+  const key = s.key || (st.stage || 'idle');
+  const dir = s.key ? s.dir : 'descending';
+  rows = rows.sort((a, b) => sorter(key, dir)(a, b) || a.pct - b.pct);
+  if (table) syncHeaders(table, key, dir, st.stage);
+  for (const r of rows) {
+    const tr = document.createElement('tr');
+    tr.dataset.key = encodeURIComponent(r.date) + ',' + encodeURIComponent(r.lgd);
+    tr.dataset.patwari = r.patwari;
+    tr.dataset.lgd = r.lgd;
+    if (r.lgd === st.village) tr.className = 'sv-sel';
+    cell(tr, r.village);
+    cell(tr, r.patwari, 'sv-l');
+    cell(tr, SV.fmt(r.plots));
+    for (const k of STAGE_COLS) cell(tr, SV.fmt(r[k]), st.stage === k ? 'sv-hl' : '');
+    cell(tr, pctCell(r.pct));
+    cell(tr, SV.signed(r.d_completed), r.d_completed > 0 ? 'sv-up' : r.d_completed < 0 ? 'sv-down' : '');
+    const kind = r.pct >= 1 ? 'ok' : r.stuck ? 'bad' : r.idle > 0 ? 'warn' : 'mute';
+    cell(tr, chip(SV.fmt(r.idle), kind));
+    tbody.append(tr);
+  }
+});
+</script>
+
+<script>
+// Tabs
+const showTab = (name) => {
+  for (const p of document.querySelectorAll('.sv-page')) p.hidden = p.id !== name;
+  for (const b of document.querySelectorAll('.sv-tab')) b.setAttribute('aria-selected', String(b.dataset.tab === name));
+};
+for (const b of document.querySelectorAll('.sv-tab')) {
+  b.addEventListener('click', () => { showTab(b.dataset.tab); dash.setLink(b.dataset.tab); });
+}
+const startTab = location.hash.slice(1);
+if (startTab === 'leaders' || startTab === 'overview' || startTab === 'dod') showTab(startTab);
+
+// Ranking options
+for (const sel of document.querySelectorAll('.sv-rankby')) sel.addEventListener('change', () => dash.setParams({ rank_by: sel.value }));
+for (const sel of document.querySelectorAll('.sv-topn')) sel.addEventListener('change', () => dash.setParams({ topn: Number(sel.value) }));
+dash.onData(() => {
+  const p = dash.params();
+  for (const sel of document.querySelectorAll('.sv-rankby')) sel.value = p.rank_by || 'gain_pts';
+  for (const sel of document.querySelectorAll('.sv-topn')) sel.value = String(p.topn || 5);
+});
+
+window.SVL = (() => {
+  const METRIC = {
+    gain_pts: { label: '% points gained', f: SV.pts },
+    plots_done: { label: 'Plots completed', f: SV.signed },
+    per_update: { label: 'Plots per update', f: d3.format(',.1f') },
+    pct_to: { label: '% completed', f: SV.pctF },
+  };
+  const TOP = 'var(--color-ok)', BOT = 'var(--cds-chart-status-critical)';
+  const cache = { data: null, idx: null };
+  function leaders() {
+    const st = SV.state();
+    const pr = dash.data('patwari_range');
+    if (st.status !== 'ok') return { status: st.status };
+    if (pr.status !== 'ok') return { status: pr.status };
+    if (cache.data !== pr.data) {
+      cache.data = pr.data;
+      cache.idx = new Map();
+      for (const r of pr.data) {
+        const k = r.from + '|' + r.to;
+        if (!cache.idx.has(k)) cache.idx.set(k, []);
+        cache.idx.get(k).push(r);
+      }
+    }
+    const p = dash.params();
+    const key = METRIC[p.rank_by] ? p.rank_by : 'gain_pts';
+    const rows = (cache.idx.get(st.from + '|' + st.to) || []).slice().sort((a, b) => b[key] - a[key] || a.patwari.localeCompare(b.patwari));
+    if (!rows.length) return { status: 'empty' };
+    const n = Math.max(1, Math.min(Number(p.topn) || 5, Math.floor(rows.length / 2)));
+    const top = rows.slice(0, n);
+    const bottom = rows.slice(-n).reverse();
+    return { status: 'ok', st, key, metric: METRIC[key], top, bottom, n };
+  }
+  return { METRIC, TOP, BOT, leaders };
+})();
+
+dash.draw('rng', (el) => {
+  const st = SV.state();
+  if (st.status !== 'ok') return SV.placeholder(el, st.status);
+  const d = el.dataset.end === 'from' ? st.from : st.to;
+  SV.mark(el, SV.day(d), { scope: 'all', date: d }, 'date');
+});
+
+dash.draw('lead-bars', (el) => {
+  const L = SVL.leaders();
+  if (L.status !== 'ok') return SV.placeholder(el, L.status, true);
+  const top = el.dataset.group !== 'bottom';
+  const rows = top ? L.top : L.bottom;
+  const color = top ? SVL.TOP : SVL.BOT;
+  const st = L.st;
+  const W = Math.max(280, el.clientWidth), rowH = 28, H = rows.length * rowH + 8;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labels = rows.map((r) => r.patwari);
+  const labelW = Math.min(W * 0.45, SV.textWidth(s, labels) + 12);
+  const vals = rows.map((r) => L.metric.f(r[L.key]));
+  const valW = SV.textWidth(s, vals) + 10;
+  const all = L.top.concat(L.bottom).map((r) => r[L.key]);
+  const lo = Math.min(0, d3.min(all)), hi = Math.max(L.key === 'gain_pts' || L.key === 'pct_to' ? 0.01 : 1, d3.max(all));
+  const x = d3.scaleLinear([lo, hi], [labelW, W - valW]);
+  const g = s.selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${4 + i * rowH})`).style('cursor', 'pointer')
+    .attr('opacity', (r) => (st.patwari && r.patwari !== st.patwari ? 0.45 : 1))
+    .on('click', (event, r) => dash.setParams({ patwari: st.patwari === r.patwari ? null : r.patwari, village: null }))
+    .on('pointermove', (event, r) => t.show(event, r.patwari + ' · ' + SV.day(r.from) + ' to ' + SV.day(r.to), [
+      [null, '% at start', SV.pctF(r.pct_from)], [null, '% at end', SV.pctF(r.pct_to)], [null, 'Gain', SV.pts(r.gain_pts)],
+      [null, 'Plots completed', SV.signed(r.plots_done)], [null, 'Pending verification', SV.fmt(r.verification)], [null, 'Stuck villages', SV.fmt(r.stuck)]]))
+    .on('pointerleave', () => t.hide());
+  g.append('text').attr('x', labelW - 8).attr('y', rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('class', 'sv-strong')
+    .text((r, i) => (i + 1) + '. ' + r.patwari).each(function (r, i) {
+      let s2 = r.patwari;
+      while (this.getComputedTextLength() > labelW - 12 && s2.length > 4) { s2 = s2.slice(0, -1); this.textContent = (i + 1) + '. ' + s2 + '…'; }
+    });
+  g.append('rect').attr('y', 5).attr('height', rowH - 10).attr('rx', 3)
+    .attr('x', (r) => x(Math.min(0, r[L.key]))).attr('width', (r) => Math.max(r[L.key] ? 2 : 0, Math.abs(x(r[L.key]) - x(0))))
+    .style('fill', color);
+  g.append('text').attr('x', (r) => x(Math.max(0, r[L.key])) + 6).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong').text((r) => L.metric.f(r[L.key]));
+});
+
+function leadSeries(L) {
+  const st = L.st;
+  const dates = st.dates.filter((d) => d >= st.from && d <= st.to);
+  const mk = (r, color, group) => ({ name: r.patwari, color, group, pts: dates.map((d) => st.row('p:' + r.patwari, d)).filter(Boolean) });
+  return { dates, series: L.top.map((r) => mk(r, SVL.TOP, 'Top')).concat(L.bottom.map((r) => mk(r, SVL.BOT, 'Bottom'))),
+    tehsil: dates.map((d) => st.row('all', d)).filter(Boolean) };
+}
+
+function pctAxes(s, W, H, dates, left, right, maxY) {
+  const y = d3.scaleLinear([0, maxY], [H - 24, 8]).nice();
+  const ticks = y.ticks(5);
+  const d0 = SV.toDate(dates[0]), d1 = SV.toDate(dates[dates.length - 1]);
+  const x = d3.scaleUtc(d0 < d1 ? [d0, d1] : [d3.utcDay.offset(d0, -1), d3.utcDay.offset(d0, 1)], [left, Math.max(left + 60, W - right)]);
+  s.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', left).attr('x2', x.range()[1]).attr('y1', y).attr('y2', y);
+  s.append('g').attr('transform', `translate(${left - 4},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(d3.format('.0%')).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+  const nT = Math.max(2, Math.min(dates.length, Math.floor((x.range()[1] - left) / 70)));
+  s.append('g').attr('transform', `translate(0,${H - 24})`).call(d3.axisBottom(x).ticks(nT).tickFormat(d3.utcFormat('%-d %b')).tickSizeOuter(0)).call(SV.cleanAxis);
+  return { x, y };
+}
+
+function endLabels(s, x0, items, minY, maxY) {
+  items.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < items.length; i++) items[i].y = Math.max(items[i].y, items[i - 1].y + 13);
+  const over = items.length ? items[items.length - 1].y - maxY : 0;
+  if (over > 0) items.forEach((d) => { d.y -= over; });
+  for (let i = items.length - 2; i >= 0; i--) items[i].y = Math.min(items[i].y, items[i + 1].y - 13);
+  s.append('g').selectAll('text').data(items).join('text').attr('x', x0).attr('y', (d) => Math.max(minY, d.y)).attr('dy', '0.35em')
+    .style('fill', (d) => d.color).attr('font-size', 11).text((d) => d.text);
+}
+
+dash.draw('lead-trend', (el) => {
+  const L = SVL.leaders();
+  if (L.status !== 'ok') return SV.placeholder(el, L.status, true);
+  const { dates, series, tehsil } = leadSeries(L);
+  if (!dates.length) return SV.placeholder(el, 'empty', true);
+  const st = L.st;
+  const W = Math.max(280, el.clientWidth), H = Math.max(280, (series.length + 1) * 13 + 40);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const lastOf = (pts) => pts[pts.length - 1];
+  const endText = series.map((k) => k.name + ' ' + SV.pctF(lastOf(k.pts) ? lastOf(k.pts).pct : 0)).concat(['Tamia tehsil 100.0%']);
+  const right = Math.min(W * 0.4, SV.textWidth(s, endText) + 14);
+  const maxY = Math.min(1, Math.max(0.05, d3.max(series, (k) => d3.max(k.pts, (r) => r.pct)) || 0, d3.max(tehsil, (r) => r.pct) || 0));
+  const { x, y } = pctAxes(s, W, H, dates, SV.textWidth(s, ['100%']) + 10, right, maxY);
+  const line = d3.line().x((r) => x(SV.toDate(r.date))).y((r) => y(r.pct));
+  s.append('path').attr('d', line(tehsil)).style('fill', 'none').style('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
+  for (const k of series) {
+    const dim = st.patwari && k.name !== st.patwari;
+    s.append('path').attr('d', line(k.pts)).style('fill', 'none').style('stroke', k.color).attr('stroke-width', k.name === st.patwari ? 3 : 1.75)
+      .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('opacity', dim ? 0.25 : 0.9);
+  }
+  const x1 = x.range()[1];
+  const items = series.filter((k) => k.pts.length).map((k) => ({ y: y(lastOf(k.pts).pct), color: k.color, text: k.name + ' ' + SV.pctF(lastOf(k.pts).pct) }));
+  if (tehsil.length) items.push({ y: y(lastOf(tehsil).pct), color: 'var(--color-fg-muted)', text: 'Tamia tehsil ' + SV.pctF(lastOf(tehsil).pct) });
+  endLabels(s, x1 + 8, items, 8, H - 24);
+  const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x1 - x.range()[0])).attr('height', H - 24).style('fill', 'transparent')
+    .on('pointermove', (event) => {
+      const [mx] = d3.pointer(event);
+      const d = dates[d3.leastIndex(dates, (a) => Math.abs(x(SV.toDate(a)) - mx))];
+      rule.attr('x1', x(SV.toDate(d))).attr('x2', x(SV.toDate(d))).attr('opacity', 1);
+      const lines = series.map((k) => { const r = k.pts.find((p) => p.date === d); return [k.color, k.group + ' · ' + k.name, r ? SV.pctF(r.pct) : '—']; });
+      const te = tehsil.find((p) => p.date === d);
+      lines.push([null, 'Tamia tehsil', te ? SV.pctF(te.pct) : '—']);
+      t.show(event, SV.day(d), lines);
+    })
+    .on('pointerleave', () => { rule.attr('opacity', 0); t.hide(); });
+});
+
+dash.draw('lead-slope', (el) => {
+  const L = SVL.leaders();
+  if (L.status !== 'ok') return SV.placeholder(el, L.status, true);
+  const st = L.st;
+  const rows = L.top.map((r) => ({ r, color: SVL.TOP })).concat(L.bottom.map((r) => ({ r, color: SVL.BOT })));
+  const W = Math.max(280, el.clientWidth), H = Math.max(280, rows.length * 13 + 50);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const leftW = SV.textWidth(s, rows.map((d) => SV.pctF(d.r.pct_from))) + 12;
+  const rightW = Math.min(W * 0.5, SV.textWidth(s, rows.map((d) => SV.pctF(d.r.pct_to) + ' ' + d.r.patwari)) + 12);
+  const xa = leftW, xb = Math.max(xa + 60, W - rightW);
+  const y = d3.scaleLinear([0, 1], [H - 24, 16]);
+  s.append('line').attr('x1', xa).attr('x2', xa).attr('y1', 16).attr('y2', H - 24).style('stroke', 'var(--cds-chart-axis)');
+  s.append('line').attr('x1', xb).attr('x2', xb).attr('y1', 16).attr('y2', H - 24).style('stroke', 'var(--cds-chart-axis)');
+  s.append('text').attr('x', xa).attr('y', H - 6).attr('text-anchor', 'middle').text(SV.day(st.from));
+  s.append('text').attr('x', xb).attr('y', H - 6).attr('text-anchor', 'middle').text(SV.day(st.to));
+  for (const d of rows) {
+    const dim = st.patwari && d.r.patwari !== st.patwari;
+    const g = s.append('g').attr('opacity', dim ? 0.25 : 1)
+      .on('pointermove', (event) => t.show(event, d.r.patwari, [[d.color, SV.day(d.r.from), SV.pctF(d.r.pct_from)], [d.color, SV.day(d.r.to), SV.pctF(d.r.pct_to)], [null, 'Gain', SV.pts(d.r.gain_pts)]]))
+      .on('pointerleave', () => t.hide());
+    g.append('line').attr('x1', xa).attr('x2', xb).attr('y1', y(d.r.pct_from)).attr('y2', y(d.r.pct_to)).style('stroke', d.color).attr('stroke-width', 2).attr('stroke-linecap', 'round');
+    g.append('circle').attr('cx', xa).attr('cy', y(d.r.pct_from)).attr('r', 3.5).style('fill', d.color);
+    g.append('circle').attr('cx', xb).attr('cy', y(d.r.pct_to)).attr('r', 3.5).style('fill', d.color);
+  }
+  endLabels(s, xb + 8, rows.map((d) => ({ y: y(d.r.pct_to), color: d.color, text: SV.pctF(d.r.pct_to) + ' ' + d.r.patwari })), 16, H - 24);
+  const lefts = rows.map((d) => ({ y: y(d.r.pct_from), color: d.color, text: SV.pctF(d.r.pct_from) }));
+  const g2 = s.append('g').attr('text-anchor', 'end');
+  endLabels(g2, xa - 8, lefts, 16, H - 24);
+});
+
+dash.draw('lead-gap', (el) => {
+  const L = SVL.leaders();
+  if (L.status !== 'ok') return SV.placeholder(el, L.status, true);
+  const { dates, series, tehsil } = leadSeries(L);
+  if (!dates.length) return SV.placeholder(el, 'empty', true);
+  const avg = (group, d) => d3.mean(series.filter((k) => k.group === group), (k) => { const r = k.pts.find((p) => p.date === d); return r ? r.pct : undefined; });
+  const pts = dates.map((d) => ({ date: d, top: avg('Top', d), bottom: avg('Bottom', d), tehsil: (tehsil.find((p) => p.date === d) || {}).pct }));
+  const W = Math.max(280, el.clientWidth), H = 280;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const last = pts[pts.length - 1];
+  const right = SV.textWidth(s, ['Top avg ' + SV.pctF(last.top || 0), 'Bottom avg ' + SV.pctF(last.bottom || 0), 'Tehsil ' + SV.pctF(last.tehsil || 0)]) + 14;
+  const maxY = Math.min(1, Math.max(0.05, d3.max(pts, (p) => p.top) || 0));
+  const { x, y } = pctAxes(s, W, H, dates, SV.textWidth(s, ['100%']) + 10, right, maxY);
+  const X = (p) => x(SV.toDate(p.date));
+  s.append('path').attr('d', d3.area().x(X).y0((p) => y(p.bottom ?? 0)).y1((p) => y(p.top ?? 0))(pts)).style('fill', 'var(--color-warn)').attr('fill-opacity', 0.14);
+  const ln = (k) => d3.line().x(X).y((p) => y(p[k] ?? 0));
+  s.append('path').attr('d', ln('tehsil')(pts)).style('fill', 'none').style('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 2).attr('stroke-dasharray', '5 4');
+  s.append('path').attr('d', ln('top')(pts)).style('fill', 'none').style('stroke', SVL.TOP).attr('stroke-width', 2.5).attr('stroke-linecap', 'round');
+  s.append('path').attr('d', ln('bottom')(pts)).style('fill', 'none').style('stroke', SVL.BOT).attr('stroke-width', 2.5).attr('stroke-linecap', 'round');
+  endLabels(s, x.range()[1] + 8, [
+    { y: y(last.top ?? 0), color: SVL.TOP, text: 'Top avg ' + SV.pctF(last.top ?? 0) },
+    { y: y(last.bottom ?? 0), color: SVL.BOT, text: 'Bottom avg ' + SV.pctF(last.bottom ?? 0) },
+    { y: y(last.tehsil ?? 0), color: 'var(--color-fg-muted)', text: 'Tehsil ' + SV.pctF(last.tehsil ?? 0) }], 8, H - 24);
+  const rule = s.append('line').attr('y1', 8).attr('y2', H - 24).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  s.append('rect').attr('x', x.range()[0]).attr('y', 0).attr('width', Math.max(1, x.range()[1] - x.range()[0])).attr('height', H - 24).style('fill', 'transparent')
+    .on('pointermove', (event) => {
+      const [mx] = d3.pointer(event);
+      const p = pts[d3.leastIndex(pts, (a) => Math.abs(X(a) - mx))];
+      rule.attr('x1', X(p)).attr('x2', X(p)).attr('opacity', 1);
+      t.show(event, SV.day(p.date), [[SVL.TOP, 'Top group average', SV.pctF(p.top ?? 0)], [SVL.BOT, 'Bottom group average', SV.pctF(p.bottom ?? 0)],
+        [null, 'Gap', SV.pts((p.top ?? 0) - (p.bottom ?? 0)).replace('+', '')], [null, 'Tamia tehsil', SV.pctF(p.tehsil ?? 0)]]);
+    })
+    .on('pointerleave', () => { rule.attr('opacity', 0); t.hide(); });
+});
+
+dash.draw('lead-multi', (el) => {
+  const L = SVL.leaders();
+  if (L.status !== 'ok') return SV.placeholder(el, L.status, true);
+  const { dates, series } = leadSeries(L);
+  if (!dates.length) return SV.placeholder(el, 'empty', true);
+  const st = L.st;
+  const W = Math.max(280, el.clientWidth);
+  const cols = Math.max(1, Math.min(5, Math.floor(W / 190)));
+  const gap = 14, pw = (W - gap * (cols - 1)) / cols, ph = 104;
+  const rowsN = Math.ceil(series.length / cols);
+  const H = rowsN * (ph + gap);
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const maxV = Math.max(1, d3.max(series, (k) => d3.max(k.pts, (r) => r.d_completed ?? 0)) || 1);
+  series.forEach((k, i) => {
+    const gx = (i % cols) * (pw + gap), gy = Math.floor(i / cols) * (ph + gap);
+    const g = s.append('g').attr('transform', `translate(${gx},${gy})`).attr('opacity', st.patwari && k.name !== st.patwari ? 0.35 : 1);
+    g.append('rect').attr('width', pw).attr('height', ph).attr('rx', 4).style('fill', 'none').style('stroke', 'var(--color-border-line)');
+    g.append('rect').attr('width', 3).attr('height', ph).attr('rx', 1).style('fill', k.color);
+    const total = d3.sum(k.pts, (r) => r.d_completed ?? 0);
+    const title = g.append('text').attr('x', 10).attr('y', 16).attr('class', 'sv-strong').text(k.name);
+    let s2 = k.name;
+    while (title.node().getComputedTextLength() > pw - 16 && s2.length > 4) { s2 = s2.slice(0, -1); title.text(s2 + '…'); }
+    g.append('text').attr('x', 10).attr('y', 31).text(k.group + ' · ' + SV.fmt(total) + ' plots · now ' + SV.pctF(k.pts.length ? k.pts[k.pts.length - 1].pct : 0));
+    const x = d3.scaleBand(dates, [10, pw - 8]).padding(0.2);
+    const y = d3.scaleLinear([0, maxV], [ph - 10, 42]);
+    g.append('line').attr('x1', 10).attr('x2', pw - 8).attr('y1', ph - 10).attr('y2', ph - 10).style('stroke', 'var(--cds-chart-axis)');
+    g.selectAll('rect.b').data(k.pts.filter((r) => (r.d_completed ?? 0) > 0)).join('rect').attr('class', 'b')
+      .attr('x', (r) => x(r.date)).attr('width', x.bandwidth()).attr('y', (r) => y(r.d_completed)).attr('height', (r) => y(0) - y(r.d_completed)).attr('rx', 1).style('fill', k.color);
+    g.append('rect').attr('width', pw).attr('height', ph).style('fill', 'transparent').style('cursor', 'pointer')
+      .on('click', () => dash.setParams({ patwari: st.patwari === k.name ? null : k.name, village: null }))
+      .on('pointermove', (event) => {
+        const [mx] = d3.pointer(event);
+        const d = dates[d3.leastIndex(dates, (a) => Math.abs(x(a) + x.bandwidth() / 2 - mx))];
+        const r = k.pts.find((p) => p.date === d);
+        t.show(event, k.name + ' · ' + SV.day(d), [[null, 'Plots completed', r && r.d_completed != null ? SV.signed(r.d_completed) : '—'], [null, '% completed', r ? SV.pctF(r.pct) : '—']]);
+      })
+      .on('pointerleave', () => t.hide());
+  });
+});
+
+dash.draw('ltable', (tbody) => {
+  const L = SVL.leaders();
+  tbody.replaceChildren();
+  if (L.status !== 'ok') return;
+  const st = L.st;
+  const rows = L.top.map((r) => ['sv-top', r]).concat(L.bottom.map((r) => ['sv-bot', r]));
+  rows.forEach(([cls, r], i) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = encodeURIComponent(r.patwari) + ',' + encodeURIComponent(r.from) + ',' + encodeURIComponent(r.to);
+    tr.dataset.patwari = r.patwari;
+    tr.className = cls + (i === L.top.length ? ' sv-split' : '') + (r.patwari === st.patwari ? ' sv-sel' : '');
+    const td = (text, c) => { const e = document.createElement('td'); if (c) e.className = c; if (text instanceof Node) e.append(text); else e.textContent = text; tr.append(e); };
+    td(r.patwari);
+    td(SV.fmt(r.villages));
+    td(SV.fmt(r.plots));
+    td(SV.pctF(r.pct_from));
+    td(SV.pctF(r.pct_to));
+    td(SV.pts(r.gain_pts), r.gain_pts > 0 ? 'sv-up' : r.gain_pts < 0 ? 'sv-down' : '');
+    td(SV.signed(r.plots_done));
+    td(d3.format(',.1f')(r.per_update));
+    td(SV.fmt(r.verification));
+    td(SV.fmt(r.not_started));
+    td(SV.fmt(r.stuck), r.stuck > 0 ? 'sv-down' : '');
+    tbody.append(tr);
+  });
+});
+for (const table of document.querySelectorAll('.sv-ltable')) {
+  table.addEventListener('click', (event) => {
+    const tr = event.target.closest('tr[data-patwari]');
+    if (tr) dash.setParams({ patwari: dash.params().patwari === tr.dataset.patwari ? null : tr.dataset.patwari, village: null });
+  });
+}
+</script>
+
+<script>
+// Previous vs current day
+window.SVD = (() => {
+  const cache = { data: null, idx: null };
+  function get() {
+    const st = SV.state();
+    const d = dash.data('patwari_dod');
+    if (st.status !== 'ok') return { status: st.status };
+    if (d.status !== 'ok') return { status: d.status };
+    if (cache.data !== d.data) {
+      cache.data = d.data;
+      cache.idx = new Map(d.data.map((r) => [r.scope + '|' + r.date, r]));
+    }
+    const scope = st.patwari ? 'p:' + st.patwari : 'all';
+    const patwaris = st.patwaris.map((p) => cache.idx.get('p:' + p + '|' + st.asof)).filter(Boolean);
+    return { status: 'ok', st, row: cache.idx.get(scope + '|' + st.asof), patwaris };
+  }
+  const workColor = (r) => (r.work_prev == null || r.work_today == null ? dash.colors[0] : r.work_today > r.work_prev ? 'var(--color-ok)' : r.work_today < r.work_prev ? 'var(--cds-chart-status-critical)' : dash.colors[0]);
+  return { get, workColor };
+})();
+
+dash.draw('dod-scope', (el) => {
+  const D = SVD.get();
+  if (D.status !== 'ok' || !D.row) return SV.placeholder(el, D.status === 'ok' ? 'empty' : D.status);
+  SV.mark(el, D.row.name, { scope: D.row.scope, date: D.row.date }, 'name', 'patwari_dod');
+});
+
+dash.draw('dodk', (el) => {
+  const D = SVD.get();
+  const k = el.dataset.k;
+  const r = D.status === 'ok' && D.row;
+  if (!r || r[k] == null) return SV.placeholder(el, D.status === 'ok' ? 'empty' : D.status);
+  const v = r[k];
+  const text = k === 'pct' || k === 'prev_pct' ? SV.pctF(v) : k === 'd_work' ? SV.signed(v) : SV.fmt(v);
+  SV.mark(el, text, { scope: r.scope, date: r.date }, k, 'patwari_dod', k === 'd_work' ? (v > 0 ? 'sv-up' : v < 0 ? 'sv-down' : '') : '');
+});
+
+dash.draw('dod-work', (el) => {
+  const D = SVD.get();
+  if (D.status !== 'ok') return SV.placeholder(el, D.status, true);
+  const st = D.st;
+  const rows = D.patwaris.slice().sort((a, b) => (b.work_today ?? -1) - (a.work_today ?? -1) || (b.work_prev ?? -1) - (a.work_prev ?? -1) || a.name.localeCompare(b.name));
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  const W = Math.max(280, el.clientWidth), rowH = 26, H = rows.length * rowH + 26;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labelW = Math.min(W * 0.35, SV.textWidth(s, rows.map((r) => r.name)) + 12);
+  const valW = SV.textWidth(s, rows.map((r) => SV.fmt(r.work_today ?? 0) + ' vs ' + SV.fmt(r.work_prev ?? 0))) + 12;
+  const maxV = Math.max(1, d3.max(rows, (r) => Math.max(r.work_today ?? 0, r.work_prev ?? 0)));
+  const x = d3.scaleLinear([0, maxV], [labelW, Math.max(labelW + 40, W - valW)]).nice();
+  const ticks = x.ticks(Math.max(2, Math.floor((x.range()[1] - labelW) / 80)));
+  s.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', H - 22);
+  s.append('g').attr('transform', `translate(0,${H - 22})`).call(d3.axisBottom(x).tickValues(ticks).tickFormat(SV.fmt).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+  const g = s.selectAll('g.r').data(rows).join('g').attr('class', 'r').attr('transform', (r, i) => `translate(0,${i * rowH})`).style('cursor', 'pointer')
+    .attr('opacity', (r) => (st.patwari && r.patwari !== st.patwari ? 0.4 : 1))
+    .on('click', (event, r) => dash.setParams({ patwari: st.patwari === r.patwari ? null : r.patwari, village: null }))
+    .on('pointermove', (event, r) => t.show(event, r.name, [['var(--cds-chart-muted)', SV.day(r.prev_date), SV.fmt(r.work_prev ?? 0) + ' plots'], [SVD.workColor(r), SV.day(r.date), SV.fmt(r.work_today ?? 0) + ' plots'], [null, 'Change', SV.signed(r.d_work)], [null, 'Status', r.trend]]))
+    .on('pointerleave', () => t.hide());
+  g.append('text').attr('x', labelW - 8).attr('y', rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('class', (r) => (r.patwari === st.patwari ? 'sv-strong' : null))
+    .text((r) => r.name).each(function (r) {
+      let s2 = r.name;
+      while (this.getComputedTextLength() > labelW - 12 && s2.length > 4) { s2 = s2.slice(0, -1); this.textContent = s2 + '…'; }
+    });
+  g.append('rect').attr('x', labelW).attr('y', 4).attr('height', 7).attr('rx', 2).attr('width', (r) => Math.max(0, x(Math.max(0, r.work_prev ?? 0)) - labelW)).style('fill', 'var(--cds-chart-muted)');
+  g.append('rect').attr('x', labelW).attr('y', 12).attr('height', 10).attr('rx', 2).attr('width', (r) => Math.max(0, x(Math.max(0, r.work_today ?? 0)) - labelW)).style('fill', (r) => SVD.workColor(r));
+  g.append('text').attr('x', (r) => x(Math.max(0, r.work_today ?? 0, r.work_prev ?? 0)) + 6).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong')
+    .text((r) => SV.fmt(r.work_today ?? 0) + ' vs ' + SV.fmt(r.work_prev ?? 0));
+});
+
+dash.draw('dod-dumb', (el) => {
+  const D = SVD.get();
+  if (D.status !== 'ok') return SV.placeholder(el, D.status, true);
+  const st = D.st;
+  const rows = D.patwaris.slice().sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name));
+  if (!rows.length) return SV.placeholder(el, 'empty', true);
+  const W = Math.max(280, el.clientWidth), rowH = 22, H = rows.length * rowH + 26;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labelW = Math.min(W * 0.4, SV.textWidth(s, rows.map((r) => r.name)) + 12);
+  const valW = SV.textWidth(s, ['+00.0 pts']) + 10;
+  const x = d3.scaleLinear([0, 1], [labelW, Math.max(labelW + 40, W - valW)]);
+  const ticks = [0, 0.25, 0.5, 0.75, 1];
+  s.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', H - 22);
+  s.append('g').attr('transform', `translate(0,${H - 22})`).call(d3.axisBottom(x).tickValues(ticks).tickFormat(d3.format('.0%')).tickSize(0)).call(SV.cleanAxis).call((g) => g.select('.domain').remove());
+  const g = s.selectAll('g.r').data(rows).join('g').attr('class', 'r').attr('transform', (r, i) => `translate(0,${i * rowH})`).style('cursor', 'pointer')
+    .attr('opacity', (r) => (st.patwari && r.patwari !== st.patwari ? 0.4 : 1))
+    .on('click', (event, r) => dash.setParams({ patwari: st.patwari === r.patwari ? null : r.patwari, village: null }))
+    .on('pointermove', (event, r) => t.show(event, r.name, [['var(--cds-chart-muted)', SV.day(r.prev_date), r.prev_pct == null ? '—' : SV.pctF(r.prev_pct)], [dash.colors[0], SV.day(r.date), SV.pctF(r.pct)], [null, 'Change', SV.pts(r.d_pct)]]))
+    .on('pointerleave', () => t.hide());
+  g.append('text').attr('x', labelW - 8).attr('y', rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end').attr('class', (r) => (r.patwari === st.patwari ? 'sv-strong' : null))
+    .text((r) => r.name).each(function (r) {
+      let s2 = r.name;
+      while (this.getComputedTextLength() > labelW - 12 && s2.length > 4) { s2 = s2.slice(0, -1); this.textContent = s2 + '…'; }
+    });
+  const color = (r) => (r.d_pct > 0 ? 'var(--color-ok)' : r.d_pct < 0 ? 'var(--cds-chart-status-critical)' : dash.colors[0]);
+  g.append('line').attr('x1', (r) => x(r.prev_pct ?? r.pct)).attr('x2', (r) => x(r.pct)).attr('y1', rowH / 2).attr('y2', rowH / 2).style('stroke', color).attr('stroke-width', 3).attr('stroke-linecap', 'round');
+  g.filter((r) => r.prev_pct != null).append('circle').attr('cx', (r) => x(r.prev_pct)).attr('cy', rowH / 2).attr('r', 4).style('fill', 'var(--cds-chart-muted)');
+  g.append('circle').attr('cx', (r) => x(r.pct)).attr('cy', rowH / 2).attr('r', 4.5).style('fill', color);
+  g.append('text').attr('x', x(1) + 8).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong').text((r) => SV.pts(r.d_pct));
+});
+
+dash.draw('dod-stage', (el) => {
+  const D = SVD.get();
+  const r = D.status === 'ok' && D.row;
+  if (!r) return SV.placeholder(el, D.status === 'ok' ? 'empty' : D.status, true);
+  const W = Math.max(280, el.clientWidth), rowH = 40, H = SV.STAGES.length * rowH + 6;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const labelW = SV.textWidth(s, SV.STAGES.map((k) => k.label)) + 12;
+  const valW = SV.textWidth(s, SV.STAGES.map((k) => SV.fmt(r[k.key]) + ' (' + SV.signed(r['d_' + k.key]) + ')')) + 12;
+  const maxV = Math.max(1, d3.max(SV.STAGES, (k) => Math.max(r[k.key] ?? 0, r['prev_' + k.key] ?? 0)));
+  const x = d3.scaleLinear([0, maxV], [labelW, Math.max(labelW + 40, W - valW)]);
+  const g = s.selectAll('g').data(SV.STAGES).join('g').attr('transform', (k, i) => `translate(0,${i * rowH + 3})`)
+    .on('pointermove', (event, k) => t.show(event, k.label, [['var(--cds-chart-muted)', SV.day(r.prev_date), r['prev_' + k.key] == null ? '—' : SV.fmt(r['prev_' + k.key])], [SV.STAGE_COLOR[k.key], SV.day(r.date), SV.fmt(r[k.key])], [null, 'Change', SV.signed(r['d_' + k.key])]]))
+    .on('pointerleave', () => t.hide());
+  g.append('text').attr('x', 0).attr('y', rowH / 2).attr('dy', '0.35em').text((k) => k.label);
+  g.append('rect').attr('x', labelW).attr('y', 7).attr('height', 9).attr('rx', 2).attr('width', (k) => Math.max(0, x(r['prev_' + k.key] ?? 0) - labelW)).style('fill', 'var(--cds-chart-muted)');
+  g.append('rect').attr('x', labelW).attr('y', 18).attr('height', 13).attr('rx', 2).attr('width', (k) => Math.max(r[k.key] > 0 ? 2 : 0, x(r[k.key] ?? 0) - labelW)).style('fill', (k) => SV.STAGE_COLOR[k.key]);
+  g.append('text').attr('x', (k) => x(Math.max(r[k.key] ?? 0, r['prev_' + k.key] ?? 0)) + 6).attr('y', rowH / 2).attr('dy', '0.35em').attr('class', 'sv-strong')
+    .text((k) => SV.fmt(r[k.key]) + ' (' + SV.signed(r['d_' + k.key]) + ')');
+});
+
+dash.draw('dod-trend', (el) => {
+  const D = SVD.get();
+  if (D.status !== 'ok') return SV.placeholder(el, D.status, true);
+  const cats = [['Faster', 'var(--color-ok)'], ['Same', dash.colors[0]], ['Slower', 'var(--color-warn)'], ['No work', 'var(--cds-chart-status-critical)'], ['First update', 'var(--cds-chart-muted)']];
+  const counts = cats.map(([c, color]) => ({ c, color, n: D.patwaris.filter((r) => r.trend === c).length })).filter((d) => d.n > 0);
+  const total = d3.sum(counts, (d) => d.n);
+  if (!total) return SV.placeholder(el, 'empty', true);
+  const W = Math.max(280, el.clientWidth), H = 56;
+  const s = SV.svg(el, W, H);
+  const t = SV.tip(el);
+  const x = d3.scaleLinear([0, total], [0, W]);
+  let acc = 0;
+  for (const d of counts) {
+    const x0 = x(acc), w = x(acc + d.n) - x0;
+    const names = D.patwaris.filter((r) => r.trend === d.c).map((r) => r.name);
+    s.append('rect').attr('x', x0 + 1).attr('y', 0).attr('width', Math.max(1, w - 2)).attr('height', 22).attr('rx', 3).style('fill', d.color)
+      .on('pointermove', (event) => t.show(event, d.c + ' · ' + d.n + ' patwaris', names.slice(0, 12).map((n) => [null, n, '']).concat(names.length > 12 ? [[null, '…and ' + (names.length - 12) + ' more', '']] : [])))
+      .on('pointerleave', () => t.hide());
+    const label = s.append('text').attr('x', x0 + 4).attr('y', 40).attr('class', 'sv-strong').text(d.c + ' ' + d.n);
+    if (label.node().getComputedTextLength() > w - 4) label.text(String(d.n));
+    if (label.node().getComputedTextLength() > w) label.remove();
+    acc += d.n;
+  }
+});
+
+const dodSort = { key: 'work_today', dir: 'descending' };
+const DOD_GOOD_UP = { d_work: 1, d_pct: 1, d_not_started: -1 };
+const DOD_COLS = [
+  ['work_prev', SV.fmt], ['work_today', SV.fmt], ['d_work', SV.signed], ['prev_completed', SV.fmt], ['completed', SV.fmt],
+  ['prev_pct', SV.pctF], ['pct', SV.pctF], ['d_pct', SV.pts], ['prev_verification', SV.fmt], ['verification', SV.fmt],
+  ['d_verification', SV.signed], ['d_initiated', SV.signed], ['d_submitted', SV.signed], ['d_registration', SV.signed], ['d_not_started', SV.signed],
+  ['moved', SV.fmt], ['stuck', SV.fmt],
+];
+for (const table of document.querySelectorAll('.sv-dtable')) {
+  for (const th of table.querySelectorAll('th[data-sort]')) {
+    th.addEventListener('click', () => {
+      const k = th.dataset.sort;
+      dodSort.dir = dodSort.key === k && dodSort.dir === 'descending' ? 'ascending' : 'descending';
+      dodSort.key = k;
+      dash.draw('dtable');
+    });
+  }
+  table.addEventListener('click', (event) => {
+    if (event.target.closest('th')) return;
+    const tr = event.target.closest('tr[data-patwari]');
+    if (tr) dash.setParams({ patwari: dash.params().patwari === tr.dataset.patwari ? null : tr.dataset.patwari, village: null });
+  });
+}
+
+dash.draw('dtable', (tbody) => {
+  const D = SVD.get();
+  tbody.replaceChildren();
+  const table = tbody.closest('table');
+  if (D.status !== 'ok') return;
+  const st = D.st;
+  const m = dodSort.dir === 'ascending' ? 1 : -1;
+  const rows = D.patwaris.slice().sort((a, b) => {
+    const x = a[dodSort.key], y = b[dodSort.key];
+    if (typeof x === 'string' || typeof y === 'string') return m * String(x ?? '').localeCompare(String(y ?? ''));
+    return m * ((x ?? -Infinity) - (y ?? -Infinity)) || a.name.localeCompare(b.name);
+  });
+  if (table) {
+    for (const th of table.querySelectorAll('th[data-sort]')) {
+      if (th.dataset.sort === dodSort.key) th.setAttribute('aria-sort', dodSort.dir); else th.removeAttribute('aria-sort');
+    }
+  }
+  const maxAbs = {};
+  for (const [k] of DOD_COLS) if (k.startsWith('d_')) maxAbs[k] = Math.max(1e-9, d3.max(rows, (r) => Math.abs(r[k] ?? 0)) || 0);
+  const kind = { Faster: 'ok', Same: 'mute', Slower: 'warn', 'No work': 'bad', 'First update': 'mute' };
+  for (const r of rows) {
+    const tr = document.createElement('tr');
+    tr.dataset.key = encodeURIComponent(r.scope) + ',' + encodeURIComponent(r.date);
+    tr.dataset.patwari = r.patwari;
+    if (r.patwari === st.patwari) tr.className = 'sv-sel';
+    const add = (content, cls) => { const td = document.createElement('td'); if (cls) td.className = cls; if (content instanceof Node) td.append(content); else td.textContent = content; tr.append(td); return td; };
+    add(r.name);
+    const c = document.createElement('span');
+    c.className = 'sv-chip sv-' + (kind[r.trend] || 'mute');
+    c.textContent = r.trend;
+    add(c, 'sv-l');
+    for (const [k, f] of DOD_COLS) {
+      const v = r[k];
+      const td = add(v == null ? '—' : f(v));
+      if (k.startsWith('d_') && v) {
+        const dir = DOD_GOOD_UP[k];
+        const a = Math.round(10 + 30 * Math.min(1, Math.abs(v) / maxAbs[k]));
+        const tone = dir ? (v * dir > 0 ? 'var(--color-ok)' : 'var(--color-bad)') : 'var(--color-fg-muted)';
+        td.style.background = `color-mix(in srgb, ${tone} ${dir ? a : Math.round(a / 2)}%, transparent)`;
+      }
+      if (k === 'stuck' && v > 0) td.className = 'sv-down';
+    }
+    tbody.append(tr);
+  }
+});
+</script>
+
+</div>
+</body>
+</html>
