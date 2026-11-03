@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Easing, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Easing, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import data from './data.json';
 
 export const FPS = 30;
@@ -394,6 +394,8 @@ export const TehsilProgress: React.FC = () => {
   return (
     <AbsoluteFill>
       <Backdrop />
+      {/* Original background track made by make_music.py */}
+      <Audio src={staticFile('music.wav')} volume={(f) => interpolate(f, [0, 30, DURATION - 45, DURATION], [0, 0.85, 0.85, 0], clamp)} />
       {seq(S.intro, <Intro />)}
       {seq(S.target, <TargetScene />)}
       {seq(S.tehsil, <Tehsil />)}

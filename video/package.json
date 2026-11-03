@@ -3,8 +3,9 @@
   "private": true,
   "scripts": {
     "data": "python3 make_data.py",
+    "music": "python3 make_music.py",
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts TehsilProgress out/tamia-svamitva-progress.mp4"
+    "render": "python3 make_music.py && remotion render src/index.ts TehsilProgress out/tamia-svamitva-progress.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.300",
