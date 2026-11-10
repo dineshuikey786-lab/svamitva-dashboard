@@ -351,6 +351,65 @@
   @keyframes lv-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @keyframes lv-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   @keyframes lv-tip { from { opacity: 0; transform: translateY(4px) scale(.97); } to { opacity: 1; transform: none; } }
+
+  /* ===== Pending plots tab ===== */
+  .pd-page { gap: 18px !important; }
+  .pd-filters { gap: 14px; }
+  .pd-frow { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+  .pd-search { flex: 1 1 260px; display: flex; align-items: center; gap: 8px; background: var(--lv-work); border-radius: 14px; padding: 0 12px; color: var(--lv-muted); min-width: 0; }
+  .pd-search svg { width: 18px; height: 18px; flex: none; }
+  .pd-search input { flex: 1; min-width: 0; border: 0; background: none; font: 500 14px var(--sv-font); color: var(--lv-text); padding: 11px 0; outline: none; }
+  .pd-f { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: var(--lv-muted); min-width: 0; }
+  .pd-f select, .pd-range input { font: 500 14px var(--sv-font); color: var(--lv-text); background: var(--lv-work); border: 0; border-radius: 10px; padding: 8px 10px; }
+  .pd-seg { display: inline-flex; background: var(--lv-work); border-radius: 12px; padding: 3px; gap: 2px; }
+  .pd-seg button { font: 600 13px var(--sv-font); color: var(--lv-muted); background: none; border: 0; border-radius: 9px; padding: 7px 12px; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+  .pd-seg button[aria-pressed="true"] { background: #fff; color: var(--lv-violet); box-shadow: 0 2px 6px rgba(120, 61, 245, .15); }
+  .pd-order svg { transition: transform .35s var(--lv-pop, ease); }
+  .pd-order.asc svg { transform: scaleY(-1); }
+  .pd-adv { display: flex; flex-wrap: wrap; gap: 16px 22px; padding-top: 14px; border-top: 1px solid var(--lv-line); align-items: flex-start; }
+  .pd-adv:not([hidden]) { animation: lv-in .35s var(--lv-ease, ease) both; }
+  .pd-range { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+  .pd-range input { width: 84px; }
+  .pd-pctlabel { color: var(--lv-violet); font-variant-numeric: tabular-nums; }
+  .pd-dual { position: relative; width: 200px; height: 28px; }
+  .pd-dual input { position: absolute; inset: 0; width: 100%; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; }
+  .pd-dual input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--lv-soft); }
+  .pd-dual input:last-child::-webkit-slider-runnable-track { background: transparent; }
+  .pd-dual input::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 18px; height: 18px; border-radius: 50%; background: var(--lv-violet); border: 3px solid #fff; box-shadow: 0 1px 4px rgba(23, 25, 31, .25); margin-top: -6px; cursor: pointer; }
+  .pd-dual input::-moz-range-thumb { pointer-events: auto; width: 14px; height: 14px; border-radius: 50%; background: var(--lv-violet); border: 3px solid #fff; cursor: pointer; }
+  .pd-dual input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--lv-soft); }
+  .pd-checks { gap: 8px; font-weight: 500; color: var(--lv-text); font-size: 13px; }
+  .pd-checks label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .pd-checks input { accent-color: var(--lv-violet); width: 16px; height: 16px; }
+  .pd-pick { flex: 1 1 100%; }
+  .pd-chips { display: flex; flex-wrap: wrap; gap: 6px; max-height: 120px; overflow-y: auto; padding: 2px; }
+  .pd-chip { font: 500 12px var(--sv-font); color: var(--lv-text); background: var(--lv-work); border: 1px solid transparent; border-radius: 10px; padding: 6px 10px; cursor: pointer; transition: background-color .2s, color .2s, transform .2s; }
+  .pd-chip[aria-pressed="true"] { background: var(--lv-violet); color: #fff; }
+  .pd-chip:hover { transform: translateY(-1px); border-color: var(--lv-pale); }
+  .pd-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .pd-stat { gap: 4px; }
+  .pd-sl { font-size: 13px; font-weight: 600; color: var(--lv-muted); }
+  .pd-sv { font: 700 34px/1.1 var(--sv-font); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .pd-ss { font-size: 12px; color: var(--lv-muted); }
+  .pd-row { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .pd-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--lv-muted); }
+  .pd-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .pd-legend i { width: 10px; height: 10px; border-radius: 3px; }
+  .pd-bars { min-height: 200px; max-height: 720px; overflow-y: auto; }
+  .pd-trend { min-height: 260px; }
+  .pd-tablewrap { max-height: 560px; }
+  .pd-table tbody tr.pd-sub td { background: #FAF9FF; font-size: 12px; }
+  .pd-table tbody tr.pd-sub td:nth-child(2) { padding-left: 34px; }
+  .pd-table tbody tr.pd-open td { background: var(--lv-soft); }
+  .pd-caret { display: inline-block; width: 14px; color: var(--lv-violet); transition: transform .25s var(--lv-ease, ease); }
+  .pd-open .pd-caret { transform: rotate(90deg); }
+  .pd-empty { padding: 28px; text-align: center; color: var(--lv-muted); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pd-table tbody tr { animation: pd-row .45s var(--lv-ease, ease) both; }
+  }
+  @keyframes pd-row { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 1180px) { .pd-row { grid-template-columns: 1fr; } .pd-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .pd-sum { grid-template-columns: 1fr; } }
   /* Older pages inside the new shell */
   .lv-app .sv-card { border: 0; border-radius: 24px; padding: 22px; box-shadow: none; }
   .lv-app .sv-card:hover { box-shadow: none; }
@@ -396,6 +455,7 @@
     <nav class="lv-nav" aria-label="Pages">
       <div class="lv-navlabel">Monitor</div>
       <button type="button" class="sv-tab lv-item" id="tab-home" data-tab="home" aria-selected="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Dashboard</button>
+      <button type="button" class="sv-tab lv-item" id="tab-pending" data-tab="pending" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M9 4h6M10 2h4M12 8v5l3 2"/><circle cx="12" cy="13" r="8"/></svg>Pending plots</button>
       <button type="button" class="sv-tab lv-item" id="tab-overview" data-tab="overview" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
       <button type="button" class="sv-tab lv-item" id="tab-leaders" data-tab="leaders" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3"/></svg>Top &amp; bottom</button>
       <button type="button" class="sv-tab lv-item" id="tab-dod" data-tab="dod" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Day vs day</button>
@@ -549,6 +609,136 @@
       </section>
     </div>
 
+
+    <div class="sv-page pd-page" id="pending" hidden>
+      <section class="lv-card pd-filters" aria-label="Pending plot filters">
+        <div class="pd-frow">
+          <label class="pd-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" class="pd-q" placeholder="Search patwari, village or LGD code" aria-label="Search patwari, village or LGD code">
+          </label>
+          <div class="pd-seg" role="group" aria-label="Show">
+            <button type="button" class="pd-level" data-level="patwari" aria-pressed="true">Patwaris</button>
+            <button type="button" class="pd-level" data-level="village" aria-pressed="false">Villages</button>
+          </div>
+          <label class="pd-f">View period
+            <select class="pd-period" aria-label="View period">
+              <option value="life">Lifetime (all updates)</option>
+              <option value="7">Last 7 updates</option>
+              <option value="3">Last 3 updates</option>
+              <option value="1">Since previous update</option>
+              <option value="trend">Trend dates (filter bar)</option>
+            </select>
+          </label>
+          <label class="pd-f">Sort by
+            <select class="pd-sort" aria-label="Sort by">
+              <option value="pending">Pending plots</option>
+              <option value="pendingPct">% pending</option>
+              <option value="cleared">Cleared in period</option>
+              <option value="verification">Pending verification</option>
+              <option value="not_started">Not started</option>
+              <option value="stuck">Stuck villages</option>
+              <option value="name">Name</option>
+            </select>
+          </label>
+          <button type="button" class="pd-order lv-iconbtn" aria-label="Highest first. Click for lowest first" title="Change order"><svg viewBox="0 0 24 24"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"/></svg></button>
+          <button type="button" class="pd-more lv-link" aria-expanded="false">Advanced filters</button>
+          <button type="button" class="pd-reset lv-link">Reset</button>
+        </div>
+        <div class="pd-adv" hidden>
+          <label class="pd-f">Pending in stage
+            <select class="pd-stage" aria-label="Pending in stage">
+              <option value="">Any stage</option>
+              <option value="not_started">Not started</option>
+              <option value="initiated">Registry initiated</option>
+              <option value="verification">Patwari verification</option>
+              <option value="submitted">Submitted</option>
+              <option value="registration">Registration</option>
+            </select>
+          </label>
+          <div class="pd-f">Status
+            <div class="pd-seg" role="group" aria-label="Status">
+              <button type="button" class="pd-status" data-status="" aria-pressed="true">All</button>
+              <button type="button" class="pd-status" data-status="risk" aria-pressed="false">At risk</button>
+              <button type="button" class="pd-status" data-status="mid" aria-pressed="false">Behind</button>
+              <button type="button" class="pd-status" data-status="ok" aria-pressed="false">On track</button>
+            </div>
+          </div>
+          <div class="pd-f">Pending plots
+            <div class="pd-range"><input type="number" class="pd-pmin" min="0" placeholder="Min" aria-label="Minimum pending plots"><span>to</span><input type="number" class="pd-pmax" min="0" placeholder="Max" aria-label="Maximum pending plots"></div>
+          </div>
+          <div class="pd-f">% completed <b class="pd-pctlabel" data-draw="pd-pctlabel">—</b>
+            <div class="pd-dual">
+              <input type="range" class="pd-cmin" min="0" max="100" step="5" value="0" aria-label="Minimum % completed">
+              <input type="range" class="pd-cmax" min="0" max="100" step="5" value="100" aria-label="Maximum % completed">
+            </div>
+          </div>
+          <div class="pd-f pd-checks">
+            <label><input type="checkbox" class="pd-stuck"> Stuck villages only</label>
+            <label><input type="checkbox" class="pd-hidedone" checked> Hide fully completed</label>
+            <label><input type="checkbox" class="pd-verif"> Pending verification only</label>
+          </div>
+          <div class="pd-f pd-pick">Patwaris <span class="lv-note">(none ticked = all)</span>
+            <div class="pd-chips" data-draw="pd-chips" data-source="scope_daily"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pd-sum" aria-label="Pending summary">
+        <div class="lv-card pd-stat"><span class="pd-sl">Pending plots</span><b class="pd-sv" data-draw="pd-stat" data-k="pending">—</b><span class="pd-ss" data-draw="pd-stat" data-k="pendingSub">—</span></div>
+        <div class="lv-card pd-stat"><span class="pd-sl">Cleared in view period</span><b class="pd-sv" data-draw="pd-stat" data-k="cleared">—</b><span class="pd-ss" data-draw="pd-stat" data-k="period">—</span></div>
+        <div class="lv-card pd-stat"><span class="pd-sl">Pending verification</span><b class="pd-sv" data-draw="pd-stat" data-k="verification">—</b><span class="pd-ss">plots waiting on patwaris</span></div>
+        <div class="lv-card pd-stat"><span class="pd-sl">Shortlisted</span><b class="pd-sv" data-draw="pd-stat" data-k="count">—</b><span class="pd-ss" data-draw="pd-stat" data-k="countSub">—</span></div>
+      </section>
+
+      <section class="pd-row">
+        <article class="lv-card pd-rank" id="pending-rank">
+          <div class="lv-card-head">
+            <div><h2 class="lv-title">Pending plots, highest first</h2><p class="lv-note">Each bar splits pending plots by stage. The grey tick marks pending at the start of the view period, and the green figure is plots cleared since then. Click a bar to open its details below.</p></div>
+          </div>
+          <div class="pd-legend" aria-hidden="true">
+            <span><i style="background:#DED5F5"></i>Not started</span><span><i style="background:#B79CFF"></i>Initiated</span><span><i style="background:#FFC400"></i>Patwari verification</span><span><i style="background:#F36C79"></i>Submitted</span><span><i style="background:#783DF5"></i>Registration</span>
+          </div>
+          <div class="sv-chart pd-bars dash-skeleton" data-draw="pd-bars" data-source="village_daily"></div>
+        </article>
+        <article class="lv-card pd-trendcard" id="pending-trend">
+          <h2 class="lv-title">Pending plots over the view period</h2>
+          <p class="lv-note">For the shortlist above. A falling line means plots are being cleared.</p>
+          <div class="sv-chart pd-trend dash-skeleton" data-draw="pd-trend" data-source="village_daily"></div>
+        </article>
+      </section>
+
+      <section class="lv-card" id="pending-table">
+        <div class="lv-card-head">
+          <h2 class="lv-title">Details</h2>
+          <span class="lv-note">Click a patwari to see their villages. Hover a column title for its meaning.</span>
+        </div>
+        <div class="lv-tablewrap pd-tablewrap">
+          <table class="lv-table pd-table" data-source="village_daily">
+            <thead>
+              <tr>
+                <th class="lv-l">#</th>
+                <th class="lv-l">Name</th>
+                <th title="Villages in this row">Villages</th>
+                <th title="All plots (the target)">Target</th>
+                <th title="Plots with registry completed">Completed</th>
+                <th title="Target minus completed">Pending</th>
+                <th class="lv-l" title="Pending as a share of the target">% pending</th>
+                <th title="Plots with no registry started">Not started</th>
+                <th title="Plots in Registry initiated">Initiated</th>
+                <th title="Plots waiting for patwari verification">Verification</th>
+                <th title="Plots submitted">Submitted</th>
+                <th title="Plots in registration">Registration</th>
+                <th title="Pending plots on the first day of the view period">Pending at start</th>
+                <th title="Plots completed during the view period">Cleared</th>
+                <th title="Villages with no change for 3 or more updates">Stuck</th>
+                <th class="lv-l">Status</th>
+              </tr>
+            </thead>
+            <tbody data-draw="pd-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
 
   <div class="sv-page" id="leaders" hidden>
     <section class="sv-filters" id="rank-options" aria-label="Ranking options">
@@ -1457,7 +1647,7 @@ for (const b of document.querySelectorAll('.sv-tab')) {
   b.addEventListener('click', () => { showTab(b.dataset.tab); dash.setLink(b.dataset.tab); });
 }
 const startTab = location.hash.slice(1);
-if (['home', 'overview', 'leaders', 'dod'].includes(startTab)) showTab(startTab);
+if (['home', 'pending', 'overview', 'leaders', 'dod'].includes(startTab)) showTab(startTab);
 
 // Ranking options
 for (const sel of document.querySelectorAll('.sv-rankby')) sel.addEventListener('change', () => dash.setParams({ rank_by: sel.value }));
@@ -2258,6 +2448,330 @@ dash.draw('dtable', (tbody) => {
     ul.addEventListener('click', (e) => pick(e.target.closest('li[data-lgd]')));
     ul.addEventListener('keydown', (e) => { if (e.key === 'Enter') pick(e.target.closest('li[data-lgd]')); });
   }
+})();
+</script>
+
+
+<script>
+// ===== Pending plots tab =====
+(() => {
+  const C = { ns: '#DED5F5', ini: '#B79CFF', ver: '#FFC400', sub: '#F36C79', reg: '#783DF5', violet: '#783DF5', muted: '#747780', text: '#17191F', line: '#ECECF2', pos: '#0E8F6C' };
+  const STAGES = [['not_started', 'Not started', C.ns], ['initiated', 'Initiated', C.ini], ['verification', 'Patwari verification', C.ver], ['submitted', 'Submitted', C.sub], ['registration', 'Registration', C.reg]];
+  const DEFAULT = () => ({ q: '', level: 'patwari', period: 'life', sort: 'pending', asc: false, stage: '', status: '', pmin: null, pmax: null, cmin: 0, cmax: 100, stuck: false, hideDone: true, verif: false, picks: new Set(), open: new Set() });
+  const P = DEFAULT();
+  const NAMES = ['pd-stat', 'pd-bars', 'pd-trend', 'pd-table', 'pd-chips', 'pd-pctlabel'];
+  const rerender = () => NAMES.forEach((n) => dash.draw(n));
+  const motion = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const statusOf = (pct) => (pct >= 0.75 ? ['ok', 'On track'] : pct >= 0.5 ? ['mid', 'Behind'] : ['risk', 'At risk']);
+  const fmt = (v) => (v == null ? '—' : SV.fmt(v));
+
+  // ---- controls (outside drawings: listen, set values, call redraw) ----
+  const on = (sel, ev, fn) => { for (const el of document.querySelectorAll(sel)) el.addEventListener(ev, () => { fn(el); rerender(); }); };
+  on('.pd-q', 'input', (el) => { P.q = el.value.trim().toLowerCase(); });
+  on('.pd-level', 'click', (el) => { P.level = el.dataset.level; P.open.clear(); for (const b of document.querySelectorAll('.pd-level')) b.setAttribute('aria-pressed', String(b === el)); });
+  on('.pd-period', 'change', (el) => { P.period = el.value; });
+  on('.pd-sort', 'change', (el) => { P.sort = el.value; P.asc = el.value === 'name'; syncOrder(); });
+  on('.pd-order', 'click', () => { P.asc = !P.asc; syncOrder(); });
+  on('.pd-stage', 'change', (el) => { P.stage = el.value; });
+  on('.pd-status', 'click', (el) => { P.status = el.dataset.status; for (const b of document.querySelectorAll('.pd-status')) b.setAttribute('aria-pressed', String(b === el)); });
+  on('.pd-pmin', 'input', (el) => { P.pmin = el.value === '' ? null : Number(el.value); });
+  on('.pd-pmax', 'input', (el) => { P.pmax = el.value === '' ? null : Number(el.value); });
+  on('.pd-cmin', 'input', (el) => { P.cmin = Math.min(Number(el.value), P.cmax); el.value = P.cmin; });
+  on('.pd-cmax', 'input', (el) => { P.cmax = Math.max(Number(el.value), P.cmin); el.value = P.cmax; });
+  on('.pd-stuck', 'change', (el) => { P.stuck = el.checked; });
+  on('.pd-hidedone', 'change', (el) => { P.hideDone = el.checked; });
+  on('.pd-verif', 'change', (el) => { P.verif = el.checked; });
+  for (const b of document.querySelectorAll('.pd-more')) b.addEventListener('click', () => {
+    const open = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', String(open));
+    for (const a of document.querySelectorAll('.pd-adv')) a.hidden = !open;
+  });
+  function syncOrder() {
+    for (const b of document.querySelectorAll('.pd-order')) {
+      b.classList.toggle('asc', P.asc);
+      b.setAttribute('aria-label', P.asc ? 'Lowest first. Click for highest first' : 'Highest first. Click for lowest first');
+    }
+  }
+  on('.pd-reset', 'click', () => {
+    Object.assign(P, DEFAULT());
+    for (const el of document.querySelectorAll('.pd-q, .pd-pmin, .pd-pmax')) el.value = '';
+    for (const el of document.querySelectorAll('.pd-period')) el.value = 'life';
+    for (const el of document.querySelectorAll('.pd-sort')) el.value = 'pending';
+    for (const el of document.querySelectorAll('.pd-stage')) el.value = '';
+    for (const el of document.querySelectorAll('.pd-cmin')) el.value = 0;
+    for (const el of document.querySelectorAll('.pd-cmax')) el.value = 100;
+    for (const el of document.querySelectorAll('.pd-stuck, .pd-verif')) el.checked = false;
+    for (const el of document.querySelectorAll('.pd-hidedone')) el.checked = true;
+    for (const b of document.querySelectorAll('.pd-level')) b.setAttribute('aria-pressed', String(b.dataset.level === 'patwari'));
+    for (const b of document.querySelectorAll('.pd-status')) b.setAttribute('aria-pressed', String(b.dataset.status === ''));
+    syncOrder();
+  });
+
+  // ---- the shortlist ----
+  const cache = { rows: null, byDate: null };
+  function compute() {
+    const st = SV.state();
+    const v = SV.villages();
+    if (st.status !== 'ok') return { status: st.status };
+    if (v.status !== 'ok') return { status: v.status };
+    if (cache.rows !== v.rows) {
+      cache.rows = v.rows;
+      cache.byDate = d3.group(v.rows, (r) => r.date);
+    }
+    const dates = st.dates;
+    const i = dates.indexOf(st.asof);
+    const back = { life: i, 7: 7, 3: 3, 1: 1 }[P.period];
+    let start = P.period === 'trend' ? (st.from <= st.asof ? st.from : dates[0]) : dates[Math.max(0, i - (back ?? i))];
+    const periodDates = dates.filter((d) => d >= start && d <= st.asof);
+    const cur = cache.byDate.get(st.asof) || [];
+    const first = new Map((cache.byDate.get(start) || []).map((r) => [r.lgd, r]));
+    const q = P.q;
+    const pre = cur.filter((r) => (!st.patwari || r.patwari === st.patwari) && (!st.village || r.lgd === st.village)
+      && (!P.picks.size || P.picks.has(r.patwari))
+      && (!q || r.village.toLowerCase().includes(q) || r.patwari.toLowerCase().includes(q) || r.lgd.includes(q)));
+    const K = ['plots', 'completed', 'not_started', 'initiated', 'verification', 'submitted', 'registration'];
+    const villageItem = (r) => {
+      const s = first.get(r.lgd);
+      const it = { key: 'v:' + r.lgd, level: 'village', name: r.village, patwari: r.patwari, lgd: r.lgd, villages: 1, stuck: r.stuck ? 1 : 0, idle: r.idle, lgds: [r.lgd] };
+      K.forEach((k) => { it[k] = r[k]; });
+      it.pendStart = s ? s.plots - s.completed : null;
+      it.cleared = s ? r.completed - s.completed : null;
+      return it;
+    };
+    let items;
+    if (P.level === 'village') items = pre.map(villageItem);
+    else {
+      items = [];
+      for (const [name, rows] of d3.group(pre, (r) => r.patwari)) {
+        const vs = rows.map(villageItem);
+        const it = { key: 'p:' + name, level: 'patwari', name, patwari: name, villages: vs.length, stuck: d3.sum(vs, (x) => x.stuck), lgds: vs.map((x) => x.lgd), children: vs };
+        K.forEach((k) => { it[k] = d3.sum(vs, (x) => x[k]); });
+        it.pendStart = d3.sum(vs, (x) => x.pendStart ?? 0);
+        it.cleared = d3.sum(vs, (x) => x.cleared ?? 0);
+        items.push(it);
+      }
+    }
+    for (const it of items) { it.pending = it.plots - it.completed; it.pct = it.plots ? it.completed / it.plots : 0; it.pendingPct = it.plots ? it.pending / it.plots : 0; }
+    items = items.filter((it) => (!P.hideDone || it.pending > 0) && (!P.stage || it[P.stage] > 0)
+      && (!P.status || statusOf(it.pct)[0] === P.status) && (P.pmin == null || it.pending >= P.pmin) && (P.pmax == null || it.pending <= P.pmax)
+      && it.pct * 100 >= P.cmin - 1e-9 && it.pct * 100 <= P.cmax + 1e-9 && (!P.stuck || it.stuck > 0) && (!P.verif || it.verification > 0));
+    const key = P.stage && P.sort === 'pending' ? P.stage : P.sort;
+    const m = P.asc ? 1 : -1;
+    items.sort((a, b) => (key === 'name' ? m * a.name.localeCompare(b.name) : m * ((a[key] ?? -Infinity) - (b[key] ?? -Infinity))) || a.name.localeCompare(b.name));
+    const lgds = new Set(items.flatMap((it) => it.lgds));
+    const series = periodDates.map((d) => {
+      const rows = (cache.byDate.get(d) || []).filter((r) => lgds.has(r.lgd));
+      return { date: d, pending: d3.sum(rows, (r) => r.plots - r.completed), verification: d3.sum(rows, (r) => r.verification) };
+    });
+    return { status: 'ok', st, items, series, start, asof: st.asof, villages: lgds.size, pre };
+  }
+
+  // ---- drawings ----
+  dash.draw('pd-pctlabel', (el) => { el.textContent = P.cmin + '% – ' + P.cmax + '%'; });
+
+  dash.draw('pd-chips', (el) => {
+    const st = SV.state();
+    el.replaceChildren();
+    if (st.status !== 'ok') return;
+    for (const name of st.patwaris) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'pd-chip'; b.textContent = name; b.dataset.name = name;
+      b.setAttribute('aria-pressed', String(P.picks.has(name)));
+      el.append(b);
+    }
+    el.onclick = (e) => {
+      const b = e.target.closest('.pd-chip');
+      if (!b) return;
+      if (P.picks.has(b.dataset.name)) P.picks.delete(b.dataset.name); else P.picks.add(b.dataset.name);
+      rerender();
+    };
+  });
+
+  dash.draw('pd-stat', (el) => {
+    const D = compute();
+    if (D.status !== 'ok') return SV.placeholder(el, D.status);
+    const k = el.dataset.k;
+    const sum = (f) => d3.sum(D.items, (it) => it[f] ?? 0);
+    const tween = (to, f = SV.fmt) => {
+      const from = Number(el.dataset.v || 0);
+      el.dataset.v = to;
+      if (!motion() || from === to) { el.textContent = f(to); return; }
+      d3.select(el).transition().duration(600).ease(d3.easeCubicOut).tween('text', () => { const i = d3.interpolateNumber(from, to); return (t) => { el.textContent = f(Math.round(i(t))); }; });
+    };
+    if (k === 'pending') tween(sum('pending'));
+    else if (k === 'cleared') tween(sum('cleared'));
+    else if (k === 'verification') tween(sum('verification'));
+    else if (k === 'count') tween(D.items.length);
+    else if (k === 'pendingSub') { const t = sum('plots'); el.textContent = 'of ' + SV.fmt(t) + ' target plots (' + (t ? SV.pctF(sum('pending') / t) : '—') + ')'; }
+    else if (k === 'period') el.textContent = SV.day(D.start) + ' → ' + SV.day(D.asof) + ' · ' + (D.series.length - 1) + ' updates';
+    else if (k === 'countSub') el.textContent = (P.level === 'patwari' ? 'patwaris' : 'villages') + ' · ' + SV.fmt(D.villages) + ' villages in all';
+  });
+
+  dash.draw('pd-bars', (el) => {
+    const D = compute();
+    if (D.status !== 'ok') { el._pd = null; return SV.placeholder(el, D.status, true); }
+    el.classList.remove('dash-skeleton');
+    let svg = d3.select(el).select('svg.pd-svg');
+    if (svg.empty()) {
+      el.replaceChildren();
+      svg = d3.select(el).append('svg').attr('class', 'pd-svg').attr('width', '100%').style('display', 'block');
+    }
+    svg.selectAll('text.pd-none').remove();
+    const items = D.items;
+    const W = Math.max(300, el.clientWidth - 4), rowH = 32;
+    const H = Math.max(rowH, items.length * rowH) + 6;
+    svg.attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+    if (!items.length) {
+      svg.selectAll('g.pd-r').remove();
+      svg.append('text').attr('class', 'pd-none').attr('x', W / 2).attr('y', 22).attr('text-anchor', 'middle').style('fill', C.muted).style('font-size', '13px').text('Nothing matches these filters');
+      return;
+    }
+    const labelW = Math.min(W * 0.36, SV.textWidth(svg, items.slice(0, 60).map((d, i) => (i + 1) + '. ' + d.name), 12) + 16);
+    const valW = SV.textWidth(svg, items.map((d) => SV.fmt(d.pending) + '  −' + SV.fmt(Math.abs(d.cleared ?? 0))), 12) + 18;
+    const max = Math.max(1, d3.max(items, (d) => d.pending));
+    const x = d3.scaleLinear([0, max], [labelW, Math.max(labelW + 40, W - valW)]);
+    const dur = motion() ? 650 : 0;
+    const t = svg.transition().duration(dur).ease(d3.easeCubicOut);
+    const tip = SV.tip(el);
+    const stack = (d) => { let acc = 0; return STAGES.map(([k, label, color]) => { const s = { k, label, color, v: d[k], x0: acc }; acc += d[k]; s.x1 = acc; return s; }); };
+    const rows = svg.selectAll('g.pd-r').data(items, (d) => d.key).join(
+      (enter) => {
+        const g = enter.append('g').attr('class', 'pd-r').attr('transform', (d, i) => `translate(0,${i * rowH + 3})`).style('opacity', 0);
+        g.append('rect').attr('class', 'sv-ov pd-bg').attr('x', 0).attr('width', W).attr('height', rowH - 2).attr('rx', 10).style('fill', 'transparent');
+        g.append('text').attr('class', 'pd-name').attr('y', rowH / 2).attr('dy', '0.35em').attr('text-anchor', 'end').style('font-size', '12px').style('fill', C.text);
+        g.append('g').attr('class', 'pd-segs');
+        g.append('line').attr('class', 'pd-start').attr('y1', 5).attr('y2', rowH - 7).style('stroke', '#9AA0B5').attr('stroke-width', 2).attr('stroke-linecap', 'round');
+        g.append('text').attr('class', 'pd-val').attr('y', rowH / 2).attr('dy', '0.35em').style('font-size', '12px').style('font-weight', 700).style('fill', C.text);
+        g.append('text').attr('class', 'pd-clr').attr('y', rowH / 2).attr('dy', '0.35em').style('font-size', '11px').style('font-weight', 600).style('fill', C.pos);
+        return g;
+      },
+      (update) => update,
+      (exit) => exit.transition().duration(dur / 2).style('opacity', 0).remove(),
+    );
+    rows.style('cursor', 'pointer')
+      .on('pointerenter', function () { d3.select(this).select('.pd-bg').style('fill', '#F4F1FF'); })
+      .on('pointerleave', function () { d3.select(this).select('.pd-bg').style('fill', 'transparent'); tip.hide(); })
+      .on('pointermove', (event, d) => tip.show(event, d.name + (d.level === 'village' ? ' · ' + d.patwari : ''), [
+        [null, 'Pending', SV.fmt(d.pending) + ' of ' + SV.fmt(d.plots)],
+        ...STAGES.filter(([k]) => d[k] > 0).map(([k, label, color]) => [color, label, SV.fmt(d[k])]),
+        [null, 'Pending at start', fmt(d.pendStart)], [null, 'Cleared in period', fmt(d.cleared)]]))
+      .on('click', (event, d) => {
+        if (d.level === 'patwari') { P.open.add(d.key); dash.draw('pd-table'); }
+        const tr = document.querySelector('.pd-table tr[data-key="' + CSS.escape(d.key) + '"]');
+        if (tr) tr.scrollIntoView({ block: 'nearest', behavior: motion() ? 'smooth' : 'auto' });
+      });
+    rows.transition(t).attr('transform', (d, i) => `translate(0,${i * rowH + 3})`).style('opacity', 1);
+    rows.select('.pd-bg').attr('width', W);
+    rows.select('.pd-name').attr('x', labelW - 10).text((d, i) => (i + 1) + '. ' + d.name).each(function (d, i) {
+      let s = d.name;
+      while (this.getComputedTextLength() > labelW - 16 && s.length > 4) { s = s.slice(0, -1); this.textContent = (i + 1) + '. ' + s + '…'; }
+    });
+    rows.select('.pd-segs').selectAll('rect').data(stack, (s) => s.k).join(
+      (enter) => enter.append('rect').attr('y', 6).attr('height', rowH - 14).attr('x', x(0)).attr('width', 0).style('fill', (s) => s.color),
+    ).transition(t).attr('x', (s) => x(s.x0)).attr('width', (s) => Math.max(0, x(s.x1) - x(s.x0) - (s.v > 0 ? 1 : 0)));
+    rows.select('.pd-start').transition(t).attr('x1', (d) => x(Math.min(max, d.pendStart ?? 0))).attr('x2', (d) => x(Math.min(max, d.pendStart ?? 0))).style('opacity', (d) => (d.pendStart && d.pendStart !== d.pending && d.pendStart <= max ? 1 : 0));
+    rows.select('.pd-val').transition(t).attr('x', (d) => x(Math.max(d.pending, d.pendStart != null && d.pendStart <= max ? d.pendStart : 0)) + 8).text((d) => SV.fmt(d.pending));
+    rows.select('.pd-clr').each(function (d) {
+      const v = d3.select(this.parentNode).select('.pd-val').node();
+      d3.select(this).text(d.cleared ? '−' + SV.fmt(d.cleared) : '');
+      d3.select(this).transition(t).attr('x', x(Math.max(d.pending, d.pendStart != null && d.pendStart <= max ? d.pendStart : 0)) + 14 + SV.textWidth(svg, [SV.fmt(d.pending)], 12));
+    });
+  });
+
+  dash.draw('pd-trend', (el) => {
+    const D = compute();
+    if (D.status !== 'ok') return SV.placeholder(el, D.status, true);
+    const rows = D.series;
+    if (!rows.length || !D.items.length) return SV.placeholder(el, 'empty', true);
+    const W = Math.max(280, el.clientWidth), H = 260, L = 50, R = 16, T = 28, B = 28;
+    const s = SV.svg(el, W, H);
+    const tip = SV.tip(el);
+    const x = d3.scalePoint(rows.map((r) => r.date), [L, W - R]).padding(rows.length === 1 ? 0.5 : 0);
+    const y = d3.scaleLinear([0, Math.max(1, d3.max(rows, (r) => r.pending))], [H - B, T]).nice();
+    const gid = 'pdg' + Math.random().toString(36).slice(2, 7);
+    const g = s.append('defs').append('linearGradient').attr('id', gid).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+    g.append('stop').attr('offset', 0).attr('stop-color', C.violet).attr('stop-opacity', 0.22);
+    g.append('stop').attr('offset', 1).attr('stop-color', C.violet).attr('stop-opacity', 0);
+    for (const v of y.ticks(4)) {
+      s.append('line').attr('x1', L).attr('x2', W - R).attr('y1', y(v)).attr('y2', y(v)).style('stroke', '#F1EFF8');
+      s.append('text').attr('x', L - 8).attr('y', y(v)).attr('dy', '0.35em').attr('text-anchor', 'end').style('font-size', '11px').style('fill', C.muted).text(SV.fmt(v));
+    }
+    const every = Math.max(1, Math.ceil(rows.length / Math.max(1, Math.floor((W - L) / 60))));
+    rows.forEach((r, i) => { if ((i % every === 0 && rows.length - 1 - i >= Math.max(1, every / 2)) || i === rows.length - 1) s.append('text').attr('x', x(r.date)).attr('y', H - 8).attr('text-anchor', 'middle').style('font-size', '11px').style('fill', C.muted).text(SV.day(r.date)); });
+    const line = d3.line().x((r) => x(r.date)).y((r) => y(r.pending)).curve(d3.curveMonotoneX);
+    const area = d3.area().x((r) => x(r.date)).y0(y(0)).y1((r) => y(r.pending)).curve(d3.curveMonotoneX);
+    s.append('path').attr('d', area(rows)).style('fill', `url(#${gid})`);
+    const p = s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', C.violet).attr('stroke-width', 2.5);
+    if (motion() && rows.length > 1) {
+      const len = p.node().getTotalLength();
+      p.attr('stroke-dasharray', len + ' ' + len).attr('stroke-dashoffset', len).transition().duration(900).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0).on('end', () => p.attr('stroke-dasharray', null));
+    }
+    const dots = s.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.date)).attr('cy', (r) => y(r.pending)).attr('r', 3.5).style('fill', '#fff').style('stroke', C.violet).attr('stroke-width', 2);
+    const a = rows[0], z = rows[rows.length - 1];
+    s.append('text').attr('x', W - R).attr('y', 14).attr('text-anchor', 'end').style('font-size', '12px').style('font-weight', 700).style('fill', C.text)
+      .text(SV.fmt(a.pending) + ' → ' + SV.fmt(z.pending) + ' pending (' + (z.pending <= a.pending ? '−' : '+') + SV.fmt(Math.abs(a.pending - z.pending)) + ')');
+    s.append('rect').attr('class', 'sv-ov').attr('x', L).attr('y', 0).attr('width', W - L - R).attr('height', H - B).style('fill', 'transparent')
+      .on('pointermove', (event) => {
+        const [mx] = d3.pointer(event);
+        const r = rows[d3.leastIndex(rows, (q) => Math.abs(x(q.date) - mx))];
+        dots.transition().duration(150).attr('r', (q) => (q === r ? 6 : 3.5)).style('fill', (q) => (q === r ? C.violet : '#fff'));
+        tip.show(event, SV.day(r.date), [[C.violet, 'Pending plots', SV.fmt(r.pending)], [C.ver, 'Pending verification', SV.fmt(r.verification)]]);
+      })
+      .on('pointerleave', () => { tip.hide(); dots.transition().duration(150).attr('r', 3.5).style('fill', '#fff'); });
+  });
+
+  dash.draw('pd-table', (tbody) => {
+    const D = compute();
+    tbody.replaceChildren();
+    if (D.status !== 'ok') return;
+    if (!D.items.length) {
+      const tr = document.createElement('tr'); const td = document.createElement('td');
+      td.colSpan = 16; td.className = 'pd-empty'; td.textContent = 'Nothing matches these filters. Try Reset.';
+      tr.append(td); tbody.append(tr); return;
+    }
+    const row = (it, idx, sub) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = it.key;
+      if (sub) tr.className = 'pd-sub';
+      else if (P.open.has(it.key)) tr.className = 'pd-open';
+      if (!sub) tr.style.animationDelay = Math.min(idx, 25) * 18 + 'ms';
+      const td = (c, cls) => { const e = document.createElement('td'); if (cls) e.className = cls; if (c instanceof Node) e.append(c); else e.textContent = c; tr.append(e); return e; };
+      td(sub ? '' : String(idx + 1), 'lv-l');
+      const name = document.createElement('span'); name.className = 'lv-person';
+      if (!sub && it.level === 'patwari') { const c = document.createElement('span'); c.className = 'pd-caret'; c.textContent = '›'; name.append(c); }
+      name.append(it.name);
+      if (it.level === 'village') { const m = document.createElement('span'); m.className = 'lv-muted'; m.style.fontWeight = '400'; m.textContent = ' · ' + (sub ? it.lgd : it.patwari); name.append(m); }
+      td(name, 'lv-l');
+      td(SV.fmt(it.villages)); td(SV.fmt(it.plots)); td(SV.fmt(it.completed));
+      const pe = td(SV.fmt(it.pending)); pe.style.fontWeight = '700';
+      const prog = document.createElement('span'); prog.className = 'lv-prog';
+      const bar = document.createElement('span'); bar.className = 'bar';
+      const i = document.createElement('i'); i.style.width = Math.round(it.pendingPct * 100) + '%'; i.style.background = '#F36C79'; bar.append(i);
+      prog.append(bar, SV.pctF(it.pendingPct)); td(prog, 'lv-l');
+      for (const [k] of STAGES) td(SV.fmt(it[k]));
+      td(fmt(it.pendStart));
+      const cl = td(it.cleared == null ? '—' : (it.cleared > 0 ? '−' : '') + SV.fmt(Math.abs(it.cleared))); if (it.cleared > 0) cl.style.color = C.pos;
+      td(SV.fmt(it.stuck));
+      const [cls, label] = statusOf(it.pct);
+      const b = document.createElement('span'); b.className = 'lv-badge ' + cls; b.textContent = label; td(b, 'lv-l');
+      return tr;
+    };
+    D.items.forEach((it, idx) => {
+      tbody.append(row(it, idx, false));
+      if (it.level === 'patwari' && P.open.has(it.key)) {
+        it.children.slice().sort((a, b) => (b.plots - b.completed) - (a.plots - a.completed)).forEach((c) => {
+          c.pending = c.plots - c.completed; c.pct = c.plots ? c.completed / c.plots : 0; c.pendingPct = c.plots ? c.pending / c.plots : 0;
+          tbody.append(row(c, idx, true));
+        });
+      }
+    });
+    tbody.onclick = (e) => {
+      const tr = e.target.closest('tr[data-key^="p:"]');
+      if (!tr) return;
+      if (P.open.has(tr.dataset.key)) P.open.delete(tr.dataset.key); else P.open.add(tr.dataset.key);
+      dash.draw('pd-table');
+    };
+  });
 })();
 </script>
 
