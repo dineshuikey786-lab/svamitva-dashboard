@@ -84,6 +84,7 @@ dash.calc('scope_daily', {
     return [...m.values()].map((a) => ({ ...a,
       in_process: a.initiated + a.verification + a.submitted + a.registration,
       pending_other: a.initiated + a.submitted + a.registration,
+      remaining: a.plots - a.completed,
       pct: a.plots ? a.completed / a.plots : 0,
       d_pct: a.d_completed == null || !a.plots ? null : a.d_completed / a.plots }));
   },

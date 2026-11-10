@@ -1950,7 +1950,7 @@ dash.draw('dtable', (tbody) => {
     const k = el.dataset.k;
     if (k === 'plots') SV.mark(el, SV.fmt(r.plots), { scope: 'all', date: r.date }, 'plots');
     else if (k === 'pct') SV.mark(el, SV.pctF(r.pct), { scope: 'all', date: r.date }, 'pct');
-    else SV.mark(el, SV.fmt(r.plots - r.completed), { scope: 'all', date: r.date }, 'completed');
+    else SV.mark(el, SV.fmt(r.remaining), { scope: 'all', date: r.date }, 'remaining');
   });
   dash.draw('lv-promo-bar', (el) => {
     const st = SV.state();
@@ -2016,8 +2016,8 @@ dash.draw('dtable', (tbody) => {
     if (st.status !== 'ok') return SV.placeholder(el, st.status);
     const rows = rangeRows(st);
     if (rows.length < 2) return SV.placeholder(el, 'empty');
-    const a = rows[0], b = rows[rows.length - 1];
-    SV.mark(el, SV.fmt(b.completed - a.completed), { scope: b.scope, date: b.date }, 'completed');
+    el.classList.remove('dash-skeleton');
+    el.textContent = SV.fmt(rows[rows.length - 1].completed - rows[0].completed);
   });
 
   dash.draw('lv-daily', (el) => {
