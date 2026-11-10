@@ -93,11 +93,11 @@
   .sv th[aria-sort] button { color: var(--color-fg); }
   .sv th[aria-sort="ascending"] button::after { content: " ↑"; }
   .sv th[aria-sort="descending"] button::after { content: " ↓"; }
-  .sv th.sv-hl, .sv td.sv-hl { background: color-mix(in srgb, var(--color-warn) 12%, transparent); }
+  .sv th.sv-hl, .sv td.sv-hl { background: rgba(255, 196, 0, .14); }
   .sv td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
   .sv tbody tr { cursor: pointer; }
   .sv tbody tr:hover td { background: var(--color-bg); }
-  .sv tbody tr.sv-sel td { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .sv tbody tr.sv-sel td { background: rgba(120, 61, 245, .08); }
   .sv-pctcell { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; }
   .sv-pctbar { display: inline-block; width: 48px; height: 6px; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; }
   .sv-pctbar > span { display: block; height: 100%; border-radius: 3px; }
@@ -126,7 +126,7 @@
   .sv-take { font-size: 16px; color: var(--color-fg); }
   .sv-take b { font-weight: 700; }
   .sv-tile { border-top: 4px solid var(--color-border-line); transition: transform .15s ease, box-shadow .15s ease; position: relative; }
-  .sv-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 18px color-mix(in srgb, var(--color-fg) 12%, transparent); }
+  .sv-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(23, 25, 31, .12); }
   .sv-tile.sv-acc-ok { border-top-color: var(--color-ok); }
   .sv-tile.sv-acc-warn { border-top-color: var(--color-warn); }
   .sv-tile.sv-acc-bad { border-top-color: var(--color-bad); }
@@ -137,7 +137,7 @@
   .sv-tile .sv-sub { font-size: 13px; }
   .sv-tile .sv-sub .sv-up, .sv-tile .sv-sub .sv-down, .sv-kv .sv-up, .sv-kv .sv-down { font-weight: 700; }
   .sv-card { transition: box-shadow .15s ease; }
-  .sv-card:hover { box-shadow: 0 4px 16px color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .sv-card:hover { box-shadow: 0 4px 16px rgba(23, 25, 31, .08); }
   .sv-tab { font-weight: 600; font-size: 15px; }
   .sv-tab:hover { color: var(--color-fg); background: var(--color-panel); }
   .sv-tab[aria-selected="true"] { border-bottom-width: 3px; font-weight: 700; }
@@ -153,7 +153,7 @@
   .sv th { font-weight: 700; }
   .sv th button { color: var(--color-fg); font-weight: 700; }
   .sv td { font-size: 13px; }
-  .sv tbody tr:hover td { background: color-mix(in srgb, var(--color-warn) 10%, transparent); }
+  .sv tbody tr:hover td { background: rgba(255, 196, 0, .1); }
   .sv tbody tr:hover td:first-child { font-weight: 700; }
   .sv-info { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font: 700 11px/1 var(--sv-font); font-style: normal; color: var(--color-bg); background: var(--color-fg-muted); cursor: help; position: relative; flex: none; }
   .sv-info:hover, .sv-info:focus-visible { background: var(--color-fg); }
@@ -410,6 +410,18 @@
   @keyframes pd-row { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   @media (max-width: 1180px) { .pd-row { grid-template-columns: 1fr; } .pd-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 520px) { .pd-sum { grid-template-columns: 1fr; } }
+
+  /* Downloads */
+  .lv-dl { display: flex; gap: 8px; }
+  .lv-dlbtn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border: 0; border-radius: 14px; background: #fff; color: var(--lv-text); font: 600 13px var(--sv-font); cursor: pointer; transition: background-color .2s, color .2s, transform .25s; }
+  .lv-dlbtn svg { width: 18px; height: 18px; color: var(--lv-violet); }
+  .lv-dlbtn:hover { background: var(--lv-violet); color: #fff; transform: translateY(-2px); }
+  .lv-dlbtn:hover svg { color: #fff; }
+  .lv-dlbtn:disabled { opacity: .7; cursor: progress; transform: none; }
+  .lv-exporting .lv-tablewrap, .lv-exporting .sv-tbox, .lv-exporting .pd-bars, .lv-exporting .pd-tablewrap { max-height: none !important; overflow: visible !important; }
+  .lv-exporting *, .lv-exporting *::before, .lv-exporting *::after { animation: none !important; transition: none !important; }
+  .lv-exporting .sv-tip { display: none !important; }
+  @media (max-width: 520px) { .lv-dlbtn span { display: none; } .lv-dlbtn { padding: 0 11px; } }
   /* Older pages inside the new shell */
   .lv-app .sv-card { border: 0; border-radius: 24px; padding: 22px; box-shadow: none; }
   .lv-app .sv-card:hover { box-shadow: none; }
@@ -483,6 +495,12 @@
         </div>
       </div>
       <div class="lv-util">
+        <!-- dl:start -->
+        <div class="lv-dl" role="group" aria-label="Download this tab">
+          <button type="button" class="lv-dlbtn" data-dl="xlsx" title="Download this tab as an Excel workbook"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="m9 9 6 6M15 9l-6 6"/></svg><span>Excel</span></button>
+          <button type="button" class="lv-dlbtn" data-dl="pdf" title="Download this tab as a PDF"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M12 11v6M9 14l3 3 3-3"/></svg><span>PDF</span></button>
+        </div>
+        <!-- dl:end -->
         <label class="lv-asof"><span>As of</span><select id="f-asof" data-draw="f-asof" data-source="scope_daily"></select></label>
         <button type="button" class="lv-iconbtn sv-refresh" aria-label="Refresh data"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
       </div>
@@ -2154,8 +2172,8 @@ dash.draw('dtable', (tbody) => {
       if (k.startsWith('d_') && v) {
         const dir = DOD_GOOD_UP[k];
         const a = Math.round(10 + 30 * Math.min(1, Math.abs(v) / maxAbs[k]));
-        const tone = dir ? (v * dir > 0 ? 'var(--color-ok)' : 'var(--color-bad)') : 'var(--color-fg-muted)';
-        td.style.background = `color-mix(in srgb, ${tone} ${dir ? a : Math.round(a / 2)}%, transparent)`;
+        const tone = dir ? (v * dir > 0 ? '32, 198, 154' : '243, 108, 121') : '116, 119, 128';
+        td.style.background = `rgba(${tone}, ${(dir ? a : Math.round(a / 2)) / 100})`;
       }
       if (k === 'stuck' && v > 0) td.className = 'sv-down';
     }
@@ -2750,7 +2768,7 @@ dash.draw('dtable', (tbody) => {
       prog.append(bar, SV.pctF(it.pendingPct)); td(prog, 'lv-l');
       for (const [k] of STAGES) td(SV.fmt(it[k]));
       td(fmt(it.pendStart));
-      const cl = td(it.cleared == null ? '—' : (it.cleared > 0 ? '−' : '') + SV.fmt(Math.abs(it.cleared))); if (it.cleared > 0) cl.style.color = C.pos;
+      const cl = td(it.cleared == null ? '—' : SV.fmt(it.cleared)); if (it.cleared > 0) cl.style.color = C.pos;
       td(SV.fmt(it.stuck));
       const [cls, label] = statusOf(it.pct);
       const b = document.createElement('span'); b.className = 'lv-badge ' + cls; b.textContent = label; td(b, 'lv-l');
@@ -2774,6 +2792,135 @@ dash.draw('dtable', (tbody) => {
   });
 })();
 </script>
+
+
+<!-- dl:start -->
+<script>
+// ===== Excel and PDF download of the current tab =====
+(() => {
+  const LIBS = {
+    xlsx: ['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'],
+    pdf: ['https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'],
+  };
+  const loaded = {};
+  const load = (src) => loaded[src] || (loaded[src] = new Promise((ok, fail) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = ok; s.onerror = () => fail(new Error('Could not load ' + src));
+    document.head.append(s);
+  }));
+  const page = () => [...document.querySelectorAll('.sv-page')].find((p) => !p.hidden);
+  const tabName = () => (document.querySelector('.sv-tab[aria-selected="true"]')?.textContent || 'Dashboard').trim();
+  const clean = (el) => { const c = el.cloneNode(true); c.querySelectorAll('.sv-info, .pd-caret, svg').forEach((x) => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+  const slug = (s) => s.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  function context() {
+    const st = SV.state();
+    const p = dash.params();
+    const rows = [['Report', 'Tamia SVAMITVA Monitor'], ['Tab', tabName()]];
+    if (st.status === 'ok') {
+      rows.push(['As of', SV.day(st.asof) + ' ' + st.asof.slice(0, 4)], ['Trend range', SV.day(st.from) + ' to ' + SV.day(st.to)]);
+      rows.push(['Patwari filter', st.patwari || 'All patwaris'], ['Village filter', st.village ? 'LGD ' + st.village : 'All villages'], ['Stage filter', p.stage || 'All stages']);
+    }
+    rows.push(['Downloaded', new Date().toLocaleString('en-IN')]);
+    return { st, rows };
+  }
+
+  function tableRows(t) {
+    const head = [...t.querySelectorAll('thead th')].map(clean);
+    const body = [...t.querySelectorAll('tbody tr')].filter((tr) => tr.children.length > 1).map((tr) => [...tr.children].map((td) => {
+      const s = clean(td);
+      if (/^[+−-]?[\d,]+(\.\d+)?$/.test(s)) return Number(s.replace(/,/g, '').replace('−', '-'));
+      return s;
+    }));
+    return [head, ...body];
+  }
+
+  async function excel() {
+    await load(LIBS.xlsx[0]);
+    const { st, rows } = context();
+    const wb = XLSX.utils.book_new();
+    const summary = [...rows, []];
+    if (st.status === 'ok') {
+      const r = st.row(st.scope, st.asof);
+      if (r) {
+        summary.push(['Figures for', r.name], ['Target plots', r.plots], ['Plots achieved', r.completed], ['% achieved', Math.round(r.pct * 1000) / 10 + '%'],
+          ['Pending plots', r.plots - r.completed], ['Pending patwari verification', r.verification], ['Plots completed since previous update', r.d_completed ?? ''], ['Stuck villages', r.stuck]);
+      }
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Summary');
+    const used = new Set(['Summary']);
+    for (const t of page()?.querySelectorAll('table') || []) {
+      const data = tableRows(t);
+      if (data.length < 2) continue;
+      let name = (clean(t.closest('.lv-card, .sv-card')?.querySelector('h2') || document.createElement('i')) || 'Table').replace(/[\\/?*[\]:]/g, ' ').slice(0, 28).trim() || 'Table';
+      let n = name, k = 2;
+      while (used.has(n)) n = name.slice(0, 25) + ' ' + k++;
+      used.add(n);
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = data[0].map((h, i) => ({ wch: Math.min(40, Math.max(8, h.length + 2, ...data.slice(1, 60).map((r) => String(r[i] ?? '').length + 2))) }));
+      XLSX.utils.book_append_sheet(wb, ws, n);
+    }
+    const v = SV.villages();
+    if (st.status === 'ok' && v.status === 'ok') {
+      const list = v.rows.filter((r) => r.date === st.asof && (!st.patwari || r.patwari === st.patwari) && (!st.village || r.lgd === st.village))
+        .sort((a, b) => a.patwari.localeCompare(b.patwari) || (b.plots - b.completed) - (a.plots - a.completed));
+      const data = [['Patwari', 'Village', 'LGD code', 'Target plots', 'Completed', 'Pending', '% completed', 'Not started', 'Registry initiated', 'Patwari verification', 'Submitted', 'Registration', 'Completed since previous update', 'Updates with no change', 'Stuck']]
+        .concat(list.map((r) => [r.patwari, r.village, r.lgd, r.plots, r.completed, r.plots - r.completed, Math.round(r.pct * 1000) / 10, r.not_started, r.initiated, r.verification, r.submitted, r.registration, r.d_completed ?? '', r.idle, r.stuck ? 'Yes' : 'No']));
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = data[0].map((h) => ({ wch: Math.max(10, h.length + 2) }));
+      XLSX.utils.book_append_sheet(wb, ws, 'All villages ' + (st.asof || ''));
+    }
+    XLSX.writeFile(wb, 'Tamia-SVAMITVA-' + slug(tabName()) + '-' + (st.asof || 'data') + '.xlsx');
+  }
+
+  async function pdf() {
+    for (const src of LIBS.pdf) await load(src);
+    const { st, rows } = context();
+    const el = page();
+    if (!el) return;
+    const canvas = await html2canvas(el, {
+      scale: 2, backgroundColor: '#F0EEFF', useCORS: true, windowWidth: Math.max(1500, window.innerWidth),
+      onclone: (doc) => doc.documentElement.classList.add('lv-exporting'),
+    });
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const W = 297, H = 210, M = 10, headH = 18;
+    const imgW = W - 2 * M;
+    const pxPerMm = canvas.width / imgW;
+    const sliceMm = H - 2 * M - headH;
+    const slicePx = Math.floor(sliceMm * pxPerMm);
+    const pages = Math.max(1, Math.ceil(canvas.height / slicePx));
+    const sub = rows.filter((r) => ['As of', 'Trend range', 'Patwari filter', 'Village filter'].includes(r[0])).map((r) => r[0] + ': ' + r[1]).join('   ·   ');
+    for (let i = 0; i < pages; i++) {
+      if (i) doc.addPage();
+      doc.setFillColor(120, 61, 245); doc.rect(0, 0, W, 4, 'F');
+      doc.setTextColor(23, 25, 31); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+      doc.text('Tamia SVAMITVA Monitor - ' + tabName().replace(/[^\x20-\x7E]/g, ''), M, M + 4);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(116, 119, 128);
+      doc.text(sub.replace(/[^\x20-\x7E·]/g, ''), M, M + 10);
+      doc.text('Page ' + (i + 1) + ' of ' + pages + '   ·   downloaded ' + new Date().toLocaleString('en-IN'), W - M, H - 4, { align: 'right' });
+      const part = document.createElement('canvas');
+      const h = Math.min(slicePx, canvas.height - i * slicePx);
+      part.width = canvas.width; part.height = h;
+      part.getContext('2d').drawImage(canvas, 0, i * slicePx, canvas.width, h, 0, 0, canvas.width, h);
+      doc.addImage(part.toDataURL('image/jpeg', 0.92), 'JPEG', M, M + headH, imgW, h / pxPerMm);
+    }
+    doc.save('Tamia-SVAMITVA-' + slug(tabName()) + '-' + (st.asof || 'data') + '.pdf');
+  }
+
+  for (const b of document.querySelectorAll('.lv-dlbtn')) {
+    b.addEventListener('click', async () => {
+      const label = b.querySelector('span');
+      const was = label.textContent;
+      b.disabled = true; label.textContent = 'Preparing…';
+      try { await (b.dataset.dl === 'pdf' ? pdf() : excel()); label.textContent = 'Downloaded'; }
+      catch (e) { console.error(e); label.textContent = 'Failed, try again'; }
+      setTimeout(() => { label.textContent = was; b.disabled = false; }, 1800);
+    });
+  }
+})();
+</script>
+<!-- dl:end -->
 
 </div>
 </body>
