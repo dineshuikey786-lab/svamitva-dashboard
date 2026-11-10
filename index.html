@@ -3,49 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tamia SVAMITVA Patwari Monitor</title>
+<title>Tamia SVAMITVA Monitor</title>
 <meta name="description" content="Day-by-day SVAMITVA registry progress for Tamia tehsil, Chhindwara, by patwari and village. Reads live from Google Sheets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap">
 <style>
   /* Tokens the page code uses. Light first, dark under prefers-color-scheme. */
   :root {
     color-scheme: light;
-    --color-bg: #f5f6f3; --color-panel: #ffffff; --color-fg: #1d2420; --color-fg-muted: #5c6660;
-    --color-border-line: #dde1dc; --color-ok: #217a46; --color-warn: #a6620a; --color-bad: #c03a2b;
-    --sv-c1: #2f7d5b; --sv-c2: #3d6fb6; --sv-c3: #c98a1b; --sv-c4: #8a63b8; --sv-c5: #2b9aa8; --sv-c6: #b85a7a; --sv-c7: #6b7f2a; --sv-c8: #7a6a5c;
-    --cds-chart-grid: #e8ebe6; --cds-chart-axis: #b9c0b9; --cds-chart-reference: #7d867f; --cds-chart-muted: #c3c9c2; --cds-chart-status-critical: #c03a2b;
-    --cds-surface-popover: #ffffff; --cds-border: #d3d8d2; --cds-shadow-popover: 0 6px 20px rgba(20, 30, 25, .14); --cds-text-secondary: #5c6660;
-    --font-anthropic-sans: "IBM Plex Sans", "Noto Sans Devanagari", system-ui, sans-serif;
-    --font-anthropic-serif: "Source Serif 4", "Noto Sans Devanagari", Georgia, serif;
+    --color-bg: #F0EEFF; --color-panel: #FFFFFF; --color-fg: #17191F; --color-fg-muted: #747780;
+    --color-border-line: #ECECF2; --color-ok: #0E8F6C; --color-warn: #8A6A00; --color-bad: #C93646;
+    --sv-c1: #783DF5; --sv-c2: #FFC400; --sv-c3: #20C69A; --sv-c4: #F36C79; --sv-c5: #B79CFF; --sv-c6: #4C7DF0; --sv-c7: #9AA0B5; --sv-c8: #D98BEB;
+    --cds-chart-grid: #F1EFF8; --cds-chart-axis: #E2E0EE; --cds-chart-reference: #A3A6B5; --cds-chart-muted: #DED5F5; --cds-chart-status-critical: #F36C79;
+    --cds-surface-popover: #FFFFFF; --cds-border: #ECECF2; --cds-shadow-popover: 0 8px 24px rgba(120, 61, 245, .14); --cds-text-secondary: #747780;
+    --font-anthropic-sans: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
+    --font-anthropic-serif: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
     --cds-font-size-caption: 12px; --cds-font-size-body: 14px; --cds-font-size-heading: 16px; --cds-font-size-title: 28px;
     --cds-font-weight-medium: 600;
-    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 16px; --cds-gap-xl: 24px;
-    --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 16px; --cds-pad-xl: 24px;
-    --cds-radius: 8px; --cds-dur-slow: .3s; --cds-ease-out: cubic-bezier(.2, .8, .2, 1);
+    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 16px; --cds-gap-xl: 18px;
+    --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 20px; --cds-pad-xl: 24px;
+    --cds-radius: 12px; --cds-dur-slow: .3s; --cds-ease-out: cubic-bezier(.2, .8, .2, 1);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --color-bg: #121614; --color-panel: #1a201d; --color-fg: #e7ece8; --color-fg-muted: #9aa59e;
-      --color-border-line: #2c3430; --color-ok: #5cc48a; --color-warn: #e0a24a; --color-bad: #ef7b6d;
-      --sv-c1: #5cb88e; --sv-c2: #78a3e6; --sv-c3: #e2b04f; --sv-c4: #b294e0; --sv-c5: #5cc3cf; --sv-c6: #e08aa8; --sv-c7: #a5bb5a; --sv-c8: #b4a294;
-      --cds-chart-grid: #252c28; --cds-chart-axis: #3d4741; --cds-chart-reference: #8b958e; --cds-chart-muted: #4a544e; --cds-chart-status-critical: #ef7b6d;
-      --cds-surface-popover: #222925; --cds-border: #38423c; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, .5); --cds-text-secondary: #9aa59e;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --color-bg: #121614; --color-panel: #1a201d; --color-fg: #e7ece8; --color-fg-muted: #9aa59e;
-    --color-border-line: #2c3430; --color-ok: #5cc48a; --color-warn: #e0a24a; --color-bad: #ef7b6d;
-    --sv-c1: #5cb88e; --sv-c2: #78a3e6; --sv-c3: #e2b04f; --sv-c4: #b294e0; --sv-c5: #5cc3cf; --sv-c6: #e08aa8; --sv-c7: #a5bb5a; --sv-c8: #b4a294;
-    --cds-chart-grid: #252c28; --cds-chart-axis: #3d4741; --cds-chart-reference: #8b958e; --cds-chart-muted: #4a544e; --cds-chart-status-critical: #ef7b6d;
-    --cds-surface-popover: #222925; --cds-border: #38423c; --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, .5); --cds-text-secondary: #9aa59e;
-  }
-  html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font: 14px/1.4 var(--font-anthropic-sans); }
+  html, body { margin: 0; background: #CDD0F1; color: var(--color-fg); font: 14px/1.4 var(--font-anthropic-sans); }
   [hidden] { display: none !important; }
-  #dash-root { max-width: 1400px; margin-inline: auto; padding-block: 16px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #dash-root { max-width: 1600px; margin-inline: auto; padding: 16px; }
+  @media (max-width: 960px) { #dash-root { padding: 0; } }
   .sv-topbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 12px; color: var(--color-fg-muted); }
   .sv-topbar .sv-loadbad { color: var(--color-bad); }
   .dash-skeleton:empty { min-height: 120px; border-radius: var(--cds-radius); background: linear-gradient(90deg, var(--cds-chart-grid), var(--color-panel), var(--cds-chart-grid)); background-size: 200% 100%; }
@@ -59,10 +42,6 @@
 </head>
 <body>
 <div id="dash-root">
-  <div class="sv-topbar">
-    <span class="sv-loadstate" role="status">Loading data from Google Sheet…</span>
-    <button type="button" class="sv-btn sv-refresh">Refresh data</button>
-  </div>
 <style>
   .sv { --sv-font: var(--font-anthropic-sans), "Noto Sans Devanagari", "Mangal", system-ui, sans-serif; font-family: var(--sv-font); display: grid; gap: var(--cds-gap-xl); }
   .sv h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
@@ -191,40 +170,334 @@
   .sv th[data-tip]:last-child::after { left: auto; right: 0; }
   .sv-tile .sv-info::after { left: 0; transform: none; }
   .sv-tile:nth-child(n+4) .sv-info::after, .sv-card:nth-child(even) h2 .sv-info::after { left: auto; right: 0; }
+
+  /* ===== Lavender SaaS shell ===== */
+  .lv-app { --lv-outer: #CDD0F1; --lv-work: #F0EEFF; --lv-violet: #783DF5; --lv-violet-2: #9B6BFF; --lv-soft: #EEE8FF; --lv-pale: #DED5F5;
+    --lv-text: #17191F; --lv-muted: #747780; --lv-line: #ECECF2; --lv-pos: #20C69A; --lv-pos-text: #0E8F6C; --lv-neg: #F36C79; --lv-neg-text: #C93646; --lv-hi: #FFC400; --lv-hi-text: #8A6A00;
+    --lv-sw: clamp(232px, 18vw, 272px); display: grid; grid-template-columns: var(--lv-sw) minmax(0, 1fr); gap: 0; min-height: calc(100vh - 32px);
+    background: linear-gradient(90deg, #fff 0 var(--lv-sw), var(--lv-line) var(--lv-sw) calc(var(--lv-sw) + 1px), var(--lv-work) calc(var(--lv-sw) + 1px)); border-radius: 28px; overflow: hidden; box-shadow: 0 1px 2px rgba(23,25,31,.04); color: var(--lv-text); }
+  .lv-app svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .lv-app .sv-chart svg { stroke-width: initial; stroke: initial; fill: initial; }
+  .lv-side { background: #fff; padding: 24px 18px; display: flex; flex-direction: column; gap: 22px; position: sticky; top: 0; align-self: start; height: min(100vh, 100%); max-height: 100vh; overflow-y: auto; border-radius: 28px 0 0 28px; }
+  .lv-brand { display: flex; align-items: center; gap: 10px; }
+  .lv-logo { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--lv-violet-2), var(--lv-violet)); }
+  .lv-logo svg { width: 20px; height: 20px; }
+  .lv-word { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .lv-word b { color: var(--lv-violet); font-weight: 700; margin-left: 2px; }
+  .lv-iconbtn.lv-close { margin-left: auto; display: none; }
+  .lv-profile { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: var(--lv-work); }
+  .lv-avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; color: var(--lv-violet); background: var(--lv-soft); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--lv-pale); flex: none; }
+  .lv-pname { font-weight: 600; font-size: 14px; }
+  .lv-psub { font-size: 12px; color: var(--lv-muted); }
+  .lv-nav { display: flex; flex-direction: column; gap: 4px; }
+  .lv-navlabel { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #A3A6B0; margin: 12px 12px 6px; }
+  .lv-nav .lv-item, .lv-nav .sv-tab.lv-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; border: 0; border-radius: 14px; background: none; color: var(--lv-muted); font: 500 15px/1.2 var(--sv-font); text-decoration: none; cursor: pointer; margin: 0; text-align: left; }
+  .lv-nav .lv-item svg { width: 20px; height: 20px; flex: none; }
+  .lv-nav .lv-item:hover { background: var(--lv-work); color: var(--lv-text); }
+  .lv-nav .sv-tab.lv-item[aria-selected="true"] { color: #fff; background: linear-gradient(135deg, var(--lv-violet-2), var(--lv-violet)); box-shadow: 0 6px 16px rgba(120,61,245,.28); font-weight: 600; border: 0; }
+  .lv-promo { margin-top: auto; padding: 18px; border-radius: 20px; color: #fff; background: radial-gradient(120% 120% at 100% 0%, #A57CFF 0%, var(--lv-violet) 55%, #5B22D6 100%); display: grid; gap: 6px; }
+  .lv-promo-k { font-size: 12px; opacity: .85; letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+  .lv-promo-v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .lv-promo-s { font-size: 12px; opacity: .9; }
+  .lv-promo-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.28); overflow: hidden; margin: 4px 0; }
+  .lv-promo-bar > span { display: block; height: 100%; }
+  .lv-promo-bar span span, .lv-promo-bar i { display: block; height: 100%; border-radius: 3px; background: #fff; }
+  .lv-promo-btn { margin-top: 8px; font: 600 13px var(--sv-font); color: var(--lv-violet); background: #fff; border: 0; border-radius: 12px; padding: 9px 12px; cursor: pointer; }
+  .lv-scrim { display: none; }
+
+  .lv-main { padding: 26px 28px 40px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+  .lv-header { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: space-between; }
+  .lv-hl { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .lv-greet { font: 700 26px/1.2 var(--sv-font) !important; letter-spacing: -.015em; margin: 0; color: var(--lv-text); }
+  .lv-sub { margin: 4px 0 0; font-size: 14px; color: var(--lv-muted); }
+  .lv-sub b { color: var(--lv-text); }
+  .lv-sub .sv-loadbad { color: var(--lv-neg-text); }
+  .lv-util { display: flex; align-items: center; gap: 10px; }
+  .lv-asof { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--lv-muted); background: #fff; border-radius: 14px; padding: 4px 4px 4px 14px; }
+  .lv-asof select, .lv-range select { font: 600 14px var(--sv-font); color: var(--lv-text); background: var(--lv-work); border: 0; border-radius: 10px; padding: 7px 10px; }
+  .lv-iconbtn { width: 40px; height: 40px; border-radius: 14px; display: grid; place-items: center; background: #fff; border: 0; color: var(--lv-text); cursor: pointer; flex: none; }
+  .lv-iconbtn svg { width: 20px; height: 20px; }
+  .lv-iconbtn:hover { color: var(--lv-violet); }
+  .lv-iconbtn.lv-menu { display: none; }
+
+  .lv-filters { background: #fff !important; border: 0 !important; border-radius: 20px !important; padding: 14px 18px !important; gap: 12px !important; }
+  .lv-filters label { font-weight: 600 !important; color: var(--lv-muted) !important; font-size: 12px !important; }
+  .lv-filters select { background: var(--lv-work) !important; border: 0 !important; border-radius: 10px !important; font-weight: 500; }
+  .lv-filters .sv-btn { border-radius: 12px; border-color: var(--lv-pale); color: var(--lv-violet); font-weight: 600; }
+
+  .lv-home { gap: 18px !important; }
+  .lv-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .lv-kpi { position: relative; background: #fff; border-radius: 24px; padding: 22px; display: grid; gap: 18px; min-width: 0; }
+  .lv-kpi-top { display: flex; align-items: center; gap: 12px; padding-right: 56px; }
+  .lv-tile { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--lv-soft); color: var(--lv-violet); flex: none; }
+  .lv-tile svg { width: 20px; height: 20px; }
+  .lv-kpi-label { font-size: 15px; font-weight: 600; color: var(--lv-text); }
+  .lv-corner { position: absolute; top: 0; right: 0; width: 66px; height: 66px; border: 0; padding: 0; cursor: pointer; background: var(--lv-work); border-bottom-left-radius: 26px; display: grid; place-items: center; }
+  .lv-corner::before, .lv-corner::after { content: ""; position: absolute; width: 24px; height: 24px; background: radial-gradient(circle at 0 100%, transparent 23px, var(--lv-work) 24px); }
+  .lv-corner::before { top: 0; left: -24px; background: radial-gradient(circle at 0 100%, transparent 23.5px, var(--lv-work) 24px); }
+  .lv-corner::after { right: 0; bottom: -24px; background: radial-gradient(circle at 0 100%, transparent 23.5px, var(--lv-work) 24px); }
+  .lv-corner svg { width: 44px; height: 44px; padding: 12px; border-radius: 50%; background: #fff; color: var(--lv-text); transition: background .15s, color .15s; box-sizing: border-box; }
+  .lv-corner:hover svg { background: var(--lv-violet); color: #fff; }
+  .lv-kpi-body { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .lv-kpi-val { font: 700 40px/1.05 var(--sv-font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .lv-kpi-cmp { margin-top: 8px; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+  .lv-muted { color: var(--lv-muted); }
+  .lv-chip { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; font-size: 12px; padding: 3px 8px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  .lv-chip.up { color: var(--lv-pos-text); background: #E3F8F1; }
+  .lv-chip.down { color: var(--lv-neg-text); background: #FDE9EB; }
+  .lv-chip.flat { color: var(--lv-muted); background: #F2F2F6; }
+  .lv-spark { width: 132px; height: 48px; flex: none; }
+
+  .lv-row2 { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 18px; }
+  .lv-row3 { display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(300px, 1fr); gap: 18px; align-items: start; }
+  .lv-card { background: #fff; border-radius: 24px; padding: 22px; min-width: 0; display: grid; gap: 12px; align-content: start; }
+  .lv-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px 16px; }
+  .lv-title { font: 600 19px/1.25 var(--sv-font) !important; margin: 0; color: var(--lv-text); display: block !important; }
+  .lv-big { margin-top: 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .lv-big > span:first-child { font: 700 32px/1 var(--sv-font); font-variant-numeric: tabular-nums; }
+  .lv-big-unit { font-size: 13px; color: var(--lv-muted); }
+  .lv-range { display: flex; align-items: center; gap: 6px; color: var(--lv-muted); background: var(--lv-work); border-radius: 14px; padding: 4px; }
+  .lv-range select { background: #fff; }
+  .lv-note { margin: 0; font-size: 12px; color: var(--lv-muted); }
+  .lv-h300 { min-height: 300px; }
+  .lv-ring { min-height: 250px; }
+  .lv-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .lv-legend li { display: grid; grid-template-columns: 12px 1fr auto auto; gap: 10px; align-items: center; font-size: 13px; padding: 8px 10px; border-radius: 12px; background: #FAF9FF; }
+  .lv-legend i { width: 12px; height: 12px; border-radius: 4px; }
+  .lv-legend b { font-variant-numeric: tabular-nums; }
+  .lv-legend span.lv-muted { font-variant-numeric: tabular-nums; min-width: 48px; text-align: right; }
+
+  .lv-tablewrap { overflow-x: auto; max-height: 440px; overflow-y: auto; margin: 0 -6px; }
+  .lv-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .lv-table th { position: sticky; top: 0; background: #fff; z-index: 1; text-align: right; font-weight: 500; font-size: 12px; color: var(--lv-muted); padding: 10px 8px; border-bottom: 1px solid var(--lv-line); white-space: nowrap; }
+  .lv-table td { text-align: right; padding: 10px 8px; border-bottom: 1px solid var(--lv-line); white-space: nowrap; }
+  .lv-table .lv-l { text-align: left; }
+  .lv-table tbody tr { cursor: pointer; }
+  .lv-table tbody tr:hover td { background: #FAF9FF; }
+  .lv-table tbody tr.sv-sel td { background: var(--lv-soft); }
+  .lv-person { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--lv-text); }
+  .lv-av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; flex: none; }
+  .lv-prog { display: flex; align-items: center; gap: 8px; }
+  .lv-prog .bar { width: 64px; height: 6px; border-radius: 3px; background: var(--lv-soft); overflow: hidden; }
+  .lv-prog .bar i { display: block; height: 100%; border-radius: 3px; background: var(--lv-violet); }
+  .lv-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 9px; }
+  .lv-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .lv-badge.ok { color: var(--lv-pos-text); background: #E3F8F1; }
+  .lv-badge.mid { color: var(--lv-hi-text); background: #FFF6D6; }
+  .lv-badge.risk { color: var(--lv-neg-text); background: #FDE9EB; }
+  .lv-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .lv-list li { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: #FAF9FF; cursor: pointer; }
+  .lv-list li:hover { background: var(--lv-soft); }
+  .lv-li-tile { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; }
+  .lv-li-tile svg { width: 20px; height: 20px; }
+  .lv-li-tile.risk { background: #FDE9EB; color: var(--lv-neg-text); }
+  .lv-li-tile.mid { background: #FFF6D6; color: var(--lv-hi-text); }
+  .lv-li-tile.ok { background: var(--lv-soft); color: var(--lv-violet); }
+  .lv-li-t { font-weight: 600; font-size: 14px; }
+  .lv-li-m { font-size: 12px; color: var(--lv-muted); margin-top: 2px; }
+  .lv-li-n { margin-left: auto; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .lv-li-n small { display: block; font-weight: 500; font-size: 11px; color: var(--lv-muted); }
+  .lv-link { font: 600 13px var(--sv-font); color: var(--lv-violet); background: var(--lv-soft); border: 0; border-radius: 10px; padding: 7px 12px; cursor: pointer; }
+  .lv-app :is(button, select, a, input, [tabindex]):focus-visible { outline: 2px solid var(--lv-violet); outline-offset: 2px; }
+
+  /* Older pages inside the new shell */
+  .lv-app .sv-card { border: 0; border-radius: 24px; padding: 22px; box-shadow: none; }
+  .lv-app .sv-card:hover { box-shadow: none; }
+  .lv-app .sv-tile { border: 0; border-top: 0; border-radius: 22px; }
+  .lv-app .sv-tile:hover { transform: none; box-shadow: 0 4px 14px rgba(120,61,245,.08); }
+  .lv-app .sv-page > .sv-filters { border: 0; border-radius: 20px; }
+  .lv-app .sv-take { color: var(--lv-muted); font-size: 15px; }
+
+  @media (max-width: 1180px) {
+    .lv-row2, .lv-row3 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 960px) {
+    .lv-app { grid-template-columns: 1fr; border-radius: 0; }
+    .lv-side { position: fixed; z-index: 40; left: 0; top: 0; bottom: 0; width: min(300px, 84vw); height: auto; transform: translateX(-105%); transition: transform .2s ease; padding-top: max(24px, env(safe-area-inset-top, 0px)); }
+    .lv-app.lv-open .lv-side { transform: none; box-shadow: 0 10px 40px rgba(23,25,31,.2); }
+    .lv-app.lv-open .lv-scrim { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(23,25,31,.25); }
+    .lv-iconbtn.lv-menu, .lv-iconbtn.lv-close { display: grid; }
+    .lv-app { background: var(--lv-work); }
+    .lv-side { border-radius: 0; height: 100dvh; max-height: none; }
+    .lv-kpis { grid-template-columns: 1fr; }
+    .lv-main { padding: 18px max(16px, env(safe-area-inset-left, 0px)) 32px max(16px, env(safe-area-inset-right, 0px)); }
+  }
+  @media (max-width: 520px) {
+    .lv-kpi-body { flex-direction: column; align-items: flex-start; }
+    .lv-spark { width: 100%; }
+    .lv-util { width: 100%; justify-content: space-between; }
+  }
   [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
   [data-dash-source-state=empty] { color: transparent; }
 </style>
 
-<div class="sv">
-  <header class="sv-head" id="top">
-    <h1>Tamia SVAMITVA patwari monitor</h1>
-    <p class="sv-take">As of <b data-draw="asof">—</b>, <b data-draw="scopename">—</b> has <b data-draw="kpi" data-k="completed">—</b> of <b data-draw="kpi" data-k="plots">—</b> plots with registry completed (<b data-draw="kpi" data-k="pct">—</b>), <b data-draw="kpid" data-k="d_completed">—</b> since <span data-draw="prev">—</span>. <b data-draw="kpi" data-k="stuck">—</b> villages have shown no change for 3 or more updates in a row.</p>
-  </header>
+<div class="sv lv-app" id="app">
+  <aside class="lv-side" id="sidebar" aria-label="Sidebar">
+    <div class="lv-brand">
+      <span class="lv-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span>
+      <span class="lv-word">svamitva<b>monitor</b></span>
+      <button type="button" class="lv-iconbtn lv-close" aria-label="Close menu"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="lv-profile">
+      <span class="lv-avatar" aria-hidden="true">TT</span>
+      <div><div class="lv-pname">Tehsil Tamia</div><div class="lv-psub">Chhindwara · Revenue</div></div>
+    </div>
+    <nav class="lv-nav" aria-label="Pages">
+      <div class="lv-navlabel">Monitor</div>
+      <button type="button" class="sv-tab lv-item" id="tab-home" data-tab="home" aria-selected="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Dashboard</button>
+      <button type="button" class="sv-tab lv-item" id="tab-overview" data-tab="overview" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analysis</button>
+      <button type="button" class="sv-tab lv-item" id="tab-leaders" data-tab="leaders" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3"/></svg>Top &amp; bottom</button>
+      <button type="button" class="sv-tab lv-item" id="tab-dod" data-tab="dod" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Day vs day</button>
+      <div class="lv-navlabel">Data</div>
+      <a class="lv-item" href="https://docs.google.com/spreadsheets/d/1fq-bMoVtM2F4xJC0neGXtUOnDZsICJscEcY0EvmcdnE/edit" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16M10 9v12"/></svg>Google Sheet</a>
+      <button type="button" class="lv-item sv-refresh"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>Refresh data</button>
+    </nav>
+    <div class="lv-promo">
+      <div class="lv-promo-k">Tehsil target</div>
+      <div class="lv-promo-v"><span data-draw="lv-promo" data-k="plots">—</span> plots</div>
+      <div class="lv-promo-bar"><span data-draw="lv-promo-bar"></span></div>
+      <div class="lv-promo-s"><span data-draw="lv-promo" data-k="pct">—</span> achieved · <span data-draw="lv-promo" data-k="left">—</span> to go</div>
+      <button type="button" class="lv-promo-btn" data-goto="leaders">See who is behind</button>
+    </div>
+  </aside>
+  <div class="lv-scrim" aria-hidden="true"></div>
 
-  <section class="sv-filters" id="filters" aria-label="Filters">
-    <label>As of date <select id="f-asof" data-draw="f-asof" data-source="scope_daily"></select></label>
-    <label>Trend from <select id="f-from" data-draw="f-from" data-source="scope_daily"></select></label>
-    <label>Trend to <select id="f-to" data-draw="f-to" data-source="scope_daily"></select></label>
-    <label>Patwari <select id="f-patwari" data-draw="f-patwari" data-source="scope_daily"></select></label>
-    <label>Village <select id="f-village" data-draw="f-village" data-source="village_daily"></select></label>
-    <label>Stage to fix
-      <select id="f-stage" class="sv-stage">
-        <option value="">All stages</option>
-        <option value="not_started">Not started</option>
-        <option value="initiated">Registry initiated</option>
-        <option value="verification">Patwari verification</option>
-        <option value="submitted">Submitted</option>
-        <option value="registration">Registration</option>
-      </select>
-    </label>
-    <button type="button" class="sv-btn sv-reset" id="f-reset">Reset filters</button>
-  </section>
+  <main class="lv-main">
+    <header class="lv-header">
+      <div class="lv-hl">
+        <button type="button" class="lv-iconbtn lv-menu" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div>
+          <h1 class="lv-greet">Namaste, Tehsildar</h1>
+          <p class="lv-sub">SVAMITVA registry as of <b data-draw="asof">—</b> · <span class="sv-loadstate" role="status">Loading data from Google Sheet…</span></p>
+        </div>
+      </div>
+      <div class="lv-util">
+        <label class="lv-asof"><span>As of</span><select id="f-asof" data-draw="f-asof" data-source="scope_daily"></select></label>
+        <button type="button" class="lv-iconbtn sv-refresh" aria-label="Refresh data"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>
+      </div>
+    </header>
 
-  <nav class="sv-tabs" aria-label="Pages">
-    <button type="button" class="sv-tab" id="tab-overview" data-tab="overview" aria-selected="true">Overview</button>
-    <button type="button" class="sv-tab" id="tab-leaders" data-tab="leaders" aria-selected="false">Top &amp; bottom patwaris</button>
-    <button type="button" class="sv-tab" id="tab-dod" data-tab="dod" aria-selected="false">Previous vs current day</button>
-  </nav>
+    <section class="sv-filters lv-filters" id="filters" aria-label="Filters">
+      <label>Patwari <select id="f-patwari" data-draw="f-patwari" data-source="scope_daily"></select></label>
+      <label>Village <select id="f-village" data-draw="f-village" data-source="village_daily"></select></label>
+      <label>Trend from <select id="f-from" data-draw="f-from" data-source="scope_daily"></select></label>
+      <label>Trend to <select id="f-to" data-draw="f-to" data-source="scope_daily"></select></label>
+      <label>Stage to fix
+        <select id="f-stage" class="sv-stage">
+          <option value="">All stages</option>
+          <option value="not_started">Not started</option>
+          <option value="initiated">Registry initiated</option>
+          <option value="verification">Patwari verification</option>
+          <option value="submitted">Submitted</option>
+          <option value="registration">Registration</option>
+        </select>
+      </label>
+      <button type="button" class="sv-btn sv-reset" id="f-reset">Reset filters</button>
+    </section>
+
+    <div class="sv-page lv-home" id="home">
+      <section class="lv-kpis" aria-label="Key figures">
+        <article class="lv-kpi">
+          <div class="lv-kpi-top">
+            <span class="lv-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span>
+            <span class="lv-kpi-label">Plots achieved</span>
+          </div>
+          <button type="button" class="lv-corner" data-goto="overview" aria-label="Open analysis"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></button>
+          <div class="lv-kpi-body">
+            <div>
+              <div class="lv-kpi-val" data-draw="lv-kpi" data-k="completed">—</div>
+              <div class="lv-kpi-cmp"><span data-draw="lv-trend" data-k="completed">—</span> <span class="lv-muted">vs previous update · of <span data-draw="lv-kpi" data-k="plots">—</span> target</span></div>
+            </div>
+            <div class="lv-spark" data-draw="lv-spark" data-k="completed" data-source="scope_daily"></div>
+          </div>
+        </article>
+        <article class="lv-kpi">
+          <div class="lv-kpi-top">
+            <span class="lv-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19h16M7 15l3-4 3 2 4-6"/></svg></span>
+            <span class="lv-kpi-label">Completed in latest update</span>
+          </div>
+          <button type="button" class="lv-corner" data-goto="dod" aria-label="Open day vs day"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></button>
+          <div class="lv-kpi-body">
+            <div>
+              <div class="lv-kpi-val" data-draw="lv-kpi" data-k="d_completed">—</div>
+              <div class="lv-kpi-cmp"><span data-draw="lv-trend" data-k="d_completed">—</span> <span class="lv-muted">vs the update before</span></div>
+            </div>
+            <div class="lv-spark" data-draw="lv-spark" data-k="d_completed" data-source="scope_daily"></div>
+          </div>
+        </article>
+        <article class="lv-kpi">
+          <div class="lv-kpi-top">
+            <span class="lv-tile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span>
+            <span class="lv-kpi-label">Pending patwari verification</span>
+          </div>
+          <button type="button" class="lv-corner" data-goto="leaders" aria-label="Open top and bottom patwaris"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></button>
+          <div class="lv-kpi-body">
+            <div>
+              <div class="lv-kpi-val" data-draw="lv-kpi" data-k="verification">—</div>
+              <div class="lv-kpi-cmp"><span data-draw="lv-trend" data-k="verification">—</span> <span class="lv-muted">plots vs previous update</span></div>
+            </div>
+            <div class="lv-spark" data-draw="lv-spark" data-k="verification" data-source="scope_daily"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="lv-row2">
+        <article class="lv-card lv-analytics" id="daily-panel">
+          <div class="lv-card-head">
+            <div>
+              <h2 class="lv-title">Daily registry completions</h2>
+              <div class="lv-big"><span data-draw="lv-rangesum">—</span> <span class="lv-big-unit">plots completed in this range</span></div>
+            </div>
+            <div class="lv-range" aria-label="Date range">
+              <select data-draw="f-from" data-source="scope_daily" aria-label="From date"></select>
+              <span aria-hidden="true">–</span>
+              <select data-draw="f-to" data-source="scope_daily" aria-label="To date"></select>
+            </div>
+          </div>
+          <div class="sv-chart lv-h300 dash-skeleton" data-draw="lv-daily" data-source="scope_daily"></div>
+          <p class="lv-note">Each column is one update day. The darker column is the as-of date. Click a column to make it the as-of date.</p>
+        </article>
+        <article class="lv-card lv-status" id="status-panel">
+          <h2 class="lv-title">Plot status</h2>
+          <p class="lv-note">Where every plot stands on the as-of date.</p>
+          <div class="sv-chart lv-ring dash-skeleton" data-draw="lv-ring" data-source="scope_daily"></div>
+          <ul class="lv-legend" data-draw="lv-legend" data-source="scope_daily"></ul>
+        </article>
+      </section>
+
+      <section class="lv-row3">
+        <article class="lv-card lv-tablecard" id="patwari-records">
+          <div class="lv-card-head">
+            <h2 class="lv-title">Patwaris</h2>
+            <span class="lv-note">Target = all plots · Achieved = registry completed · Click a row to filter</span>
+          </div>
+          <div class="lv-tablewrap">
+            <table class="lv-table" data-source="scope_daily" data-row-key="scope,date">
+              <thead>
+                <tr>
+                  <th data-field="name" class="lv-l">Patwari</th>
+                  <th data-field="plots">Target</th>
+                  <th data-field="completed">Achieved</th>
+                  <th data-field="pct" class="lv-l">Progress</th>
+                  <th data-field="verification" title="Plots waiting for patwari verification">Pending</th>
+                  <th data-field="stuck" title="Villages with no change for 3+ updates">Stuck</th>
+                  <th class="lv-l">Status</th>
+                </tr>
+              </thead>
+              <tbody data-draw="lv-ptable"></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="lv-card lv-listcard" id="followup">
+          <div class="lv-card-head">
+            <h2 class="lv-title">Villages to follow up</h2>
+            <button type="button" class="lv-link" data-goto="overview">View all</button>
+          </div>
+          <ul class="lv-list" data-draw="lv-follow" data-source="village_daily"></ul>
+        </article>
+      </section>
+    </div>
+
 
   <div class="sv-page" id="leaders" hidden>
     <section class="sv-filters" id="rank-options" aria-label="Ranking options">
@@ -400,7 +673,7 @@
     </section>
   </div>
 
-  <div class="sv-page" id="overview">
+  <div class="sv-page" id="overview" hidden>
   <section class="sv-tiles" id="summary" aria-label="Summary">
     <div class="sv-tile sv-acc-ok">
       <span class="sv-lab">Registry completed (plots) <span class="sv-info" tabindex="0" role="note" aria-label="Plots whose registry is fully completed on the as-of date. The small line shows plots added since the previous update." data-tip="Plots whose registry is fully completed on the as-of date. The small line shows plots added since the previous update.">i</span></span>
@@ -552,6 +825,7 @@
       <dt>Stuck</dt><dd>A village with no change for 3 or more updates in a row that is not yet 100% completed.</dd>
     </dl>
   </section>
+</main>
 </div>
 
 <script>
@@ -1132,7 +1406,7 @@ for (const b of document.querySelectorAll('.sv-tab')) {
   b.addEventListener('click', () => { showTab(b.dataset.tab); dash.setLink(b.dataset.tab); });
 }
 const startTab = location.hash.slice(1);
-if (startTab === 'leaders' || startTab === 'overview' || startTab === 'dod') showTab(startTab);
+if (['home', 'overview', 'leaders', 'dod'].includes(startTab)) showTab(startTab);
 
 // Ranking options
 for (const sel of document.querySelectorAll('.sv-rankby')) sel.addEventListener('change', () => dash.setParams({ rank_by: sel.value }));
@@ -1647,6 +1921,273 @@ dash.draw('dtable', (tbody) => {
     tbody.append(tr);
   }
 });
+</script>
+
+
+<script>
+// ===== Lavender dashboard home =====
+(() => {
+  const V = { violet: '#783DF5', violet2: '#9B6BFF', soft: '#EEE8FF', pale: '#DED5F5', text: '#17191F', muted: '#747780', line: '#ECECF2', pos: '#20C69A', neg: '#F36C79', hi: '#FFC400' };
+  const AV = [['#EEE8FF', '#783DF5'], ['#E3F8F1', '#0E8F6C'], ['#FFF6D6', '#8A6A00'], ['#FDE9EB', '#C93646'], ['#E6F0FF', '#2F5FC7']];
+  const app = document.getElementById('app');
+
+  // Sidebar drawer and "go to page" buttons.
+  const close = () => app && app.classList.remove('lv-open');
+  for (const b of document.querySelectorAll('.lv-menu')) b.addEventListener('click', () => app.classList.add('lv-open'));
+  for (const b of document.querySelectorAll('.lv-close, .lv-scrim')) b.addEventListener('click', close);
+  for (const b of document.querySelectorAll('.lv-nav .sv-tab')) b.addEventListener('click', close);
+  for (const b of document.querySelectorAll('[data-goto]')) {
+    b.addEventListener('click', () => { const t = document.querySelector('.sv-tab[data-tab="' + b.dataset.goto + '"]'); if (t) t.click(); window.scrollTo({ top: 0 }); });
+  }
+
+  const cur = () => { const st = SV.state(); return { st, r: st.status === 'ok' ? st.row(st.scope, st.asof) : null, p: st.status === 'ok' && st.prev ? st.row(st.scope, st.prev) : null }; };
+  const rangeRows = (st) => st.dates.filter((d) => d >= st.from && d <= st.to).map((d) => st.row(st.scope, d)).filter(Boolean);
+
+  dash.draw('lv-promo', (el) => {
+    const st = SV.state();
+    const r = st.status === 'ok' && st.row('all', st.asof);
+    if (!r) return SV.placeholder(el, st.status);
+    const k = el.dataset.k;
+    if (k === 'plots') SV.mark(el, SV.fmt(r.plots), { scope: 'all', date: r.date }, 'plots');
+    else if (k === 'pct') SV.mark(el, SV.pctF(r.pct), { scope: 'all', date: r.date }, 'pct');
+    else SV.mark(el, SV.fmt(r.plots - r.completed), { scope: 'all', date: r.date }, 'completed');
+  });
+  dash.draw('lv-promo-bar', (el) => {
+    const st = SV.state();
+    const r = st.status === 'ok' && st.row('all', st.asof);
+    el.replaceChildren();
+    if (!r) return;
+    const i = document.createElement('i');
+    i.style.width = Math.round(r.pct * 1000) / 10 + '%';
+    el.append(i);
+  });
+
+  dash.draw('lv-kpi', (el) => {
+    const { st, r } = cur();
+    const k = el.dataset.k;
+    if (!r || r[k] == null) return SV.placeholder(el, st.status === 'ok' ? 'empty' : st.status);
+    SV.mark(el, SV.fmt(r[k]), { scope: r.scope, date: r.date }, k);
+  });
+
+  // Trend chip: arrow + signed change + short word, so the meaning never depends on colour alone.
+  dash.draw('lv-trend', (el) => {
+    const { st, r, p } = cur();
+    const k = el.dataset.k;
+    el.replaceChildren();
+    if (!r || !p || r[k] == null || p[k] == null) { el.textContent = '—'; return; }
+    const diff = r[k] - p[k];
+    const lowerIsBetter = k === 'verification';
+    const good = diff === 0 ? null : (diff > 0) !== lowerIsBetter;
+    const chip = document.createElement('span');
+    chip.className = 'lv-chip ' + (good == null ? 'flat' : good ? 'up' : 'down');
+    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '■';
+    let text = SV.signed(diff);
+    if (p[k]) text += ' (' + (diff >= 0 ? '+' : '−') + d3.format('.0%')(Math.abs(diff / p[k])) + ')';
+    chip.textContent = arrow + ' ' + text;
+    chip.setAttribute('aria-label', (diff > 0 ? 'up ' : diff < 0 ? 'down ' : 'no change ') + text + (good == null ? '' : good ? ', better' : ', worse'));
+    el.append(chip);
+  });
+
+  dash.draw('lv-spark', (el) => {
+    const { st } = cur();
+    if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+    const k = el.dataset.k;
+    const rows = rangeRows(st).filter((r) => r[k] != null);
+    if (rows.length < 2) return SV.placeholder(el, 'empty', true);
+    const W = Math.max(80, el.clientWidth), H = 48;
+    const s = SV.svg(el, W, H);
+    const x = d3.scaleLinear([0, rows.length - 1], [3, W - 5]);
+    const ext = d3.extent(rows, (r) => r[k]);
+    const y = d3.scaleLinear(ext[0] === ext[1] ? [ext[0] - 1, ext[1] + 1] : ext, [H - 5, 5]);
+    const id = 'lvsg' + k;
+    const g = s.append('defs').append('linearGradient').attr('id', id).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+    g.append('stop').attr('offset', 0).attr('stop-color', V.violet).attr('stop-opacity', 0.16);
+    g.append('stop').attr('offset', 1).attr('stop-color', V.violet).attr('stop-opacity', 0);
+    const line = d3.line().x((r, i) => x(i)).y((r) => y(r[k])).curve(d3.curveMonotoneX);
+    const area = d3.area().x((r, i) => x(i)).y0(H).y1((r) => y(r[k])).curve(d3.curveMonotoneX);
+    s.append('path').attr('d', area(rows)).style('fill', `url(#${id})`);
+    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', V.violet).attr('stroke-width', 1.6);
+    const last = rows[rows.length - 1];
+    s.append('circle').attr('cx', x(rows.length - 1)).attr('cy', y(last[k])).attr('r', 3).style('fill', V.violet);
+  });
+
+  dash.draw('lv-rangesum', (el) => {
+    const { st } = cur();
+    if (st.status !== 'ok') return SV.placeholder(el, st.status);
+    const rows = rangeRows(st);
+    if (rows.length < 2) return SV.placeholder(el, 'empty');
+    const a = rows[0], b = rows[rows.length - 1];
+    SV.mark(el, SV.fmt(b.completed - a.completed), { scope: b.scope, date: b.date }, 'completed');
+  });
+
+  dash.draw('lv-daily', (el) => {
+    const { st } = cur();
+    if (st.status !== 'ok') return SV.placeholder(el, st.status, true);
+    const rows = rangeRows(st).filter((r) => r.d_completed != null);
+    if (!rows.length) return SV.placeholder(el, 'empty', true);
+    const W = Math.max(300, el.clientWidth), H = 300, L = 44, R = 12, T = 56, B = 28;
+    const s = SV.svg(el, W, H);
+    const t = SV.tip(el);
+    const x = d3.scaleBand(rows.map((r) => r.date), [L, W - R]).paddingInner(0.28).paddingOuter(0.12);
+    const maxV = Math.max(1, d3.max(rows, (r) => r.d_completed));
+    const y = d3.scaleLinear([0, maxV], [H - B, T]).nice();
+    const defs = s.append('defs');
+    const hatch = defs.append('pattern').attr('id', 'lvhatch').attr('width', 7).attr('height', 7).attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
+    hatch.append('rect').attr('width', 7).attr('height', 7).style('fill', '#F7F5FF');
+    hatch.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 7).style('stroke', '#E6E0FA').attr('stroke-width', 2.5);
+    const sel = defs.append('linearGradient').attr('id', 'lvsel').attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+    sel.append('stop').attr('offset', 0).attr('stop-color', V.violet2).attr('stop-opacity', 0.9);
+    sel.append('stop').attr('offset', 1).attr('stop-color', V.violet).attr('stop-opacity', 0.35);
+    const fill = defs.append('linearGradient').attr('id', 'lvfill').attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+    fill.append('stop').attr('offset', 0).attr('stop-color', V.violet).attr('stop-opacity', 0.14);
+    fill.append('stop').attr('offset', 1).attr('stop-color', V.violet).attr('stop-opacity', 0);
+    const ticks = y.ticks(4);
+    s.append('g').selectAll('text').data(ticks).join('text').attr('x', L - 10).attr('y', (v) => y(v)).attr('dy', '0.35em').attr('text-anchor', 'end').style('fill', V.muted).attr('font-size', 11).text(SV.fmt);
+    s.append('line').attr('x1', L).attr('x2', W - R).attr('y1', y(0)).attr('y2', y(0)).style('stroke', V.line);
+    // Columns behind the line: hatched, with the as-of day in solid violet.
+    const colTop = T - 14;
+    s.append('g').selectAll('rect').data(rows).join('rect').attr('class', 'sv-ov')
+      .attr('x', (r) => x(r.date)).attr('width', x.bandwidth()).attr('y', colTop).attr('height', y(0) - colTop).attr('rx', Math.min(10, x.bandwidth() / 2))
+      .style('fill', (r) => (r.date === st.asof ? 'url(#lvsel)' : 'url(#lvhatch)')).style('cursor', 'pointer')
+      .on('click', (event, r) => dash.setParams({ asof: r.date }))
+      .on('pointermove', (event, r) => t.show(event, SV.day(r.date), [[V.violet, 'Plots completed', SV.fmt(r.d_completed)], [null, '% achieved', SV.pctF(r.pct)]]))
+      .on('pointerleave', () => t.hide());
+    const cx = (r) => x(r.date) + x.bandwidth() / 2;
+    const line = d3.line().x(cx).y((r) => y(r.d_completed)).curve(d3.curveMonotoneX);
+    const area = d3.area().x(cx).y0(y(0)).y1((r) => y(r.d_completed)).curve(d3.curveMonotoneX);
+    s.append('path').attr('d', area(rows)).style('fill', 'url(#lvfill)').style('pointer-events', 'none');
+    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', V.violet).attr('stroke-width', 2.5).style('pointer-events', 'none');
+    s.append('g').selectAll('circle').data(rows).join('circle').attr('cx', cx).attr('cy', (r) => y(r.d_completed))
+      .attr('r', (r) => (r.date === st.asof ? 6 : 4)).style('fill', '#fff').style('stroke', V.violet).attr('stroke-width', 2).style('pointer-events', 'none');
+    const every = Math.max(1, Math.ceil(rows.length / Math.max(1, Math.floor((W - L) / 64))));
+    s.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0 || r.date === st.asof)).join('text')
+      .attr('x', cx).attr('y', H - 8).attr('text-anchor', 'middle').attr('font-size', 11)
+      .style('fill', (r) => (r.date === st.asof ? V.violet : V.muted)).style('font-weight', (r) => (r.date === st.asof ? 700 : 400)).text((r) => SV.day(r.date));
+    // Small white tooltip pinned over the as-of day.
+    const a = rows.find((r) => r.date === st.asof);
+    if (a) {
+      const label = SV.day(a.date), val = SV.fmt(a.d_completed) + ' plots';
+      const w = Math.max(SV.textWidth(s, [label], 11), SV.textWidth(s, [val], 14) * 1.15) + 24;
+      const px = Math.max(L, Math.min(W - R - w, cx(a) - w / 2));
+      const py = Math.max(2, y(a.d_completed) - 58);
+      const g = s.append('g').attr('transform', `translate(${px},${py})`).style('pointer-events', 'none');
+      g.append('rect').attr('width', w).attr('height', 44).attr('rx', 12).style('fill', '#fff').style('stroke', V.line).style('filter', 'drop-shadow(0 4px 10px rgba(120,61,245,.15))');
+      g.append('text').attr('x', 12).attr('y', 17).style('font-size', '11px').style('fill', V.muted).text(label);
+      g.append('text').attr('x', 12).attr('y', 35).style('font-size', '14px').style('font-weight', 700).style('fill', V.text).text(val);
+    }
+  });
+
+  const STATUS = [
+    { key: 'completed', label: 'Completed', color: V.violet },
+    { key: 'in_process', label: 'In process', color: V.hi },
+    { key: 'not_started', label: 'Not started', color: V.pale },
+  ];
+  dash.draw('lv-ring', (el) => {
+    const { st, r } = cur();
+    if (!r) return SV.placeholder(el, st.status === 'ok' ? 'empty' : st.status, true);
+    const W = Math.max(220, el.clientWidth), H = 250, R = Math.min(W / 2, H / 2) - 6;
+    const s = SV.svg(el, W, H);
+    const t = SV.tip(el);
+    const pie = d3.pie().value((d) => Math.max(0, r[d.key])).sort(null).padAngle(0.045);
+    const arc = d3.arc().innerRadius(R * 0.68).outerRadius(R).cornerRadius(R * 0.16);
+    const g = s.append('g').attr('transform', `translate(${W / 2},${H / 2})`);
+    g.selectAll('path').data(pie(STATUS)).join('path').attr('d', arc).style('fill', (d) => d.data.color)
+      .on('pointermove', (event, d) => t.show(event, d.data.label, [[d.data.color, 'Plots', SV.fmt(r[d.data.key]) + ' (' + SV.pctF(r.plots ? r[d.data.key] / r.plots : 0) + ')']]))
+      .on('pointerleave', () => t.hide());
+    g.append('text').attr('text-anchor', 'middle').attr('y', -8).style('font-size', '13px').style('fill', V.muted).text('Total plots');
+    g.append('text').attr('text-anchor', 'middle').attr('y', 24).style('font-size', '32px').style('font-weight', 700).style('fill', V.text).text(SV.fmt(r.plots));
+  });
+  dash.draw('lv-legend', (ul) => {
+    const { r } = cur();
+    ul.replaceChildren();
+    if (!r) return;
+    for (const d of STATUS) {
+      const li = document.createElement('li');
+      const i = document.createElement('i'); i.style.background = d.color;
+      const n = document.createElement('span'); n.textContent = d.label;
+      const b = document.createElement('b'); b.textContent = SV.fmt(r[d.key]);
+      const p = document.createElement('span'); p.className = 'lv-muted'; p.textContent = SV.pctF(r.plots ? r[d.key] / r.plots : 0);
+      li.append(i, n, b, p);
+      ul.append(li);
+    }
+  });
+
+  const initials = (n) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+  const status = (pct) => (pct >= 0.75 ? ['ok', 'On track'] : pct >= 0.5 ? ['mid', 'Behind'] : ['risk', 'At risk']);
+  dash.draw('lv-ptable', (tbody) => {
+    const { st } = cur();
+    tbody.replaceChildren();
+    if (st.status !== 'ok') return;
+    const rows = st.patwaris.map((p) => st.row('p:' + p, st.asof)).filter(Boolean).sort((a, b) => b.pct - a.pct || a.name.localeCompare(b.name));
+    rows.forEach((r, idx) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = encodeURIComponent(r.scope) + ',' + encodeURIComponent(r.date);
+      tr.dataset.patwari = r.patwari;
+      tr.tabIndex = 0;
+      if (r.patwari === st.patwari) tr.className = 'sv-sel';
+      const td = (c, cls) => { const e = document.createElement('td'); if (cls) e.className = cls; if (c instanceof Node) e.append(c); else e.textContent = c; tr.append(e); };
+      const person = document.createElement('span'); person.className = 'lv-person';
+      const av = document.createElement('span'); av.className = 'lv-av';
+      const [bg, fg] = AV[idx % AV.length]; av.style.background = bg; av.style.color = fg; av.textContent = initials(r.name);
+      person.append(av, r.name);
+      td(person, 'lv-l');
+      td(SV.fmt(r.plots));
+      td(SV.fmt(r.completed));
+      const prog = document.createElement('span'); prog.className = 'lv-prog';
+      const bar = document.createElement('span'); bar.className = 'bar';
+      const i = document.createElement('i'); i.style.width = Math.round(r.pct * 100) + '%'; bar.append(i);
+      prog.append(bar, SV.pctF(r.pct));
+      td(prog, 'lv-l');
+      td(SV.fmt(r.verification));
+      td(SV.fmt(r.stuck));
+      const [cls, label] = status(r.pct);
+      const b = document.createElement('span'); b.className = 'lv-badge ' + cls; b.textContent = label;
+      td(b, 'lv-l');
+      tbody.append(tr);
+    });
+  });
+  for (const table of document.querySelectorAll('.lv-table')) {
+    const pick = (tr) => tr && dash.setParams({ patwari: dash.params().patwari === tr.dataset.patwari ? null : tr.dataset.patwari, village: null });
+    table.addEventListener('click', (e) => pick(e.target.closest('tr[data-patwari]')));
+    table.addEventListener('keydown', (e) => { if (e.key === 'Enter') pick(e.target.closest('tr[data-patwari]')); });
+  }
+
+  const ICON = {
+    risk: '<svg viewBox="0 0 24 24"><path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4M12 17h.01"/></svg>',
+    mid: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+    ok: '<svg viewBox="0 0 24 24"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11Z"/><circle cx="12" cy="10" r="2"/></svg>',
+  };
+  dash.draw('lv-follow', (ul) => {
+    const { st } = cur();
+    const v = SV.villages();
+    ul.replaceChildren();
+    if (st.status !== 'ok' || v.status !== 'ok') return;
+    const rows = v.rows.filter((r) => r.date === st.asof && r.completed < r.plots && (!st.patwari || r.patwari === st.patwari) && (!st.village || r.lgd === st.village))
+      .sort((a, b) => b.idle - a.idle || (b.plots - b.completed) - (a.plots - a.completed)).slice(0, 6);
+    for (const r of rows) {
+      const li = document.createElement('li');
+      li.tabIndex = 0;
+      li.dataset.lgd = r.lgd; li.dataset.patwari = r.patwari;
+      const kind = r.stuck ? 'risk' : r.idle > 0 ? 'mid' : 'ok';
+      const tile = document.createElement('span'); tile.className = 'lv-li-tile ' + kind; tile.innerHTML = ICON[kind];
+      const body = document.createElement('div');
+      const tt = document.createElement('div'); tt.className = 'lv-li-t'; tt.textContent = r.village;
+      const mm = document.createElement('div'); mm.className = 'lv-li-m';
+      mm.textContent = r.patwari + ' · ' + (r.stuck ? 'stuck ' + r.idle + ' updates' : r.idle > 0 ? 'no change for ' + r.idle + (r.idle === 1 ? ' update' : ' updates') : 'moving');
+      body.append(tt, mm);
+      const n = document.createElement('div'); n.className = 'lv-li-n';
+      n.append(SV.fmt(r.plots - r.completed));
+      const sm = document.createElement('small'); sm.textContent = 'plots left'; n.append(sm);
+      li.append(tile, body, n);
+      ul.append(li);
+    }
+  });
+  for (const ul of document.querySelectorAll('.lv-list')) {
+    const pick = (li) => li && dash.setParams({ patwari: li.dataset.patwari, village: li.dataset.lgd });
+    ul.addEventListener('click', (e) => pick(e.target.closest('li[data-lgd]')));
+    ul.addEventListener('keydown', (e) => { if (e.key === 'Enter') pick(e.target.closest('li[data-lgd]')); });
+  }
+})();
 </script>
 
 </div>
