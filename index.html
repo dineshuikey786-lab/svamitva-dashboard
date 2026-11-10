@@ -300,6 +300,57 @@
   .lv-link { font: 600 13px var(--sv-font); color: var(--lv-violet); background: var(--lv-soft); border: 0; border-radius: 10px; padding: 7px 12px; cursor: pointer; }
   .lv-app :is(button, select, a, input, [tabindex]):focus-visible { outline: 2px solid var(--lv-violet); outline-offset: 2px; }
 
+
+  /* ===== Hover and entrance animation ===== */
+  @media (prefers-reduced-motion: no-preference) {
+    .lv-app { --lv-ease: cubic-bezier(.22, 1, .36, 1); --lv-pop: cubic-bezier(.34, 1.56, .64, 1); }
+    .lv-kpi, .lv-card, .lv-app .sv-card, .lv-app .sv-tile { transition: transform .3s var(--lv-ease), box-shadow .3s var(--lv-ease); }
+    .lv-kpi:hover, .lv-card:hover, .lv-app .sv-card:hover, .lv-app .sv-tile:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(120, 61, 245, .13); }
+    .lv-tile, .lv-li-tile, .lv-av { transition: transform .35s var(--lv-pop), background-color .25s, color .25s; }
+    .lv-kpi:hover .lv-tile { transform: rotate(-8deg) scale(1.12); background: var(--lv-violet); color: #fff; }
+    .lv-kpi-val { transition: color .25s, transform .3s var(--lv-ease); transform-origin: left bottom; }
+    .lv-kpi:hover .lv-kpi-val { color: var(--lv-violet); transform: scale(1.04); }
+    .lv-chip { transition: transform .3s var(--lv-pop); }
+    .lv-kpi:hover .lv-chip { transform: translateY(-2px); }
+    .lv-spark svg { transition: transform .35s var(--lv-ease); transform-origin: right bottom; }
+    .lv-kpi:hover .lv-spark svg { transform: scale(1.06); }
+    .lv-corner svg { transition: transform .35s var(--lv-pop), background-color .2s, color .2s; }
+    .lv-corner:hover svg, .lv-kpi:hover .lv-corner svg { transform: rotate(45deg); background: var(--lv-violet); color: #fff; }
+    .lv-nav .lv-item { transition: background-color .2s, color .2s, padding-left .25s var(--lv-ease), box-shadow .25s; }
+    .lv-nav .lv-item:hover { padding-left: 20px; }
+    .lv-nav .lv-item svg { transition: transform .3s var(--lv-pop); }
+    .lv-nav .lv-item:hover svg { transform: scale(1.18); }
+    .lv-iconbtn svg { transition: transform .45s var(--lv-ease); }
+    .lv-refresh:hover svg { transform: rotate(-200deg); }
+    .lv-menu:hover svg { transform: scale(1.12); }
+    .lv-promo { background-size: 160% 160%; background-position: 100% 0; transition: background-position .6s var(--lv-ease), transform .3s var(--lv-ease), box-shadow .3s; }
+    .lv-promo:hover { background-position: 0 100%; transform: translateY(-3px); box-shadow: 0 14px 30px rgba(120, 61, 245, .35); }
+    .lv-promo-btn, .lv-link, .lv-filters .sv-btn { transition: transform .25s var(--lv-pop), box-shadow .25s, background-color .2s, color .2s; }
+    .lv-promo-btn:hover, .lv-link:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(23, 25, 31, .14); }
+    .lv-link:hover, .lv-filters .sv-btn:hover { background: var(--lv-violet); color: #fff; }
+    .lv-promo-bar i, .lv-prog .bar i { animation: lv-grow 1s var(--lv-ease) both; transform-origin: left; }
+    .lv-table td { transition: background-color .2s; }
+    .lv-table tbody tr:hover .lv-av { transform: scale(1.18); }
+    .lv-badge { transition: transform .3s var(--lv-pop); }
+    .lv-table tbody tr:hover .lv-badge { transform: translateX(4px); }
+    .lv-table tbody tr:hover .lv-prog .bar i { filter: brightness(1.15); }
+    .lv-list li, .lv-legend li { transition: transform .3s var(--lv-ease), background-color .2s, box-shadow .3s; }
+    .lv-list li:hover { transform: translateX(6px); box-shadow: 0 8px 18px rgba(120, 61, 245, .1); }
+    .lv-list li:hover .lv-li-tile { transform: scale(1.12) rotate(-6deg); }
+    .lv-legend li:hover { transform: translateX(4px); background: var(--lv-soft); }
+    .lv-asof, .lv-range { transition: box-shadow .25s; }
+    .lv-asof:hover, .lv-range:hover { box-shadow: 0 0 0 3px var(--lv-soft); }
+    .sv-tip:not([hidden]) { animation: lv-tip .18s var(--lv-ease) both; }
+    .lv-kpi, .lv-card, .lv-filters { animation: lv-in .6s var(--lv-ease) both; }
+    .lv-kpi:nth-child(2) { animation-delay: .06s; } .lv-kpi:nth-child(3) { animation-delay: .12s; }
+    .lv-row2 > :nth-child(1) { animation-delay: .16s; } .lv-row2 > :nth-child(2) { animation-delay: .22s; }
+    .lv-row3 > :nth-child(1) { animation-delay: .26s; } .lv-row3 > :nth-child(2) { animation-delay: .32s; }
+    .lv-ring path, .lv-daily-col, .lv-daily-pt { transition: opacity .25s, transform .3s var(--lv-pop); }
+    .lv-app .sv-chart rect:not(.sv-ov) { transition: filter .2s, opacity .2s; }
+  }
+  @keyframes lv-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes lv-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes lv-tip { from { opacity: 0; transform: translateY(4px) scale(.97); } to { opacity: 1; transform: none; } }
   /* Older pages inside the new shell */
   .lv-app .sv-card { border: 0; border-radius: 24px; padding: 22px; box-shadow: none; }
   .lv-app .sv-card:hover { box-shadow: none; }
@@ -2046,18 +2097,30 @@ dash.draw('dtable', (tbody) => {
     s.append('line').attr('x1', L).attr('x2', W - R).attr('y1', y(0)).attr('y2', y(0)).style('stroke', V.line);
     // Columns behind the line: hatched, with the as-of day in solid violet.
     const colTop = T - 14;
-    s.append('g').selectAll('rect').data(rows).join('rect').attr('class', 'sv-ov')
+    let pts;
+    const focus = (d) => {
+      if (!pts) return;
+      pts.transition().duration(220).attr('r', (r) => (r === d ? 8 : r.date === st.asof ? 6 : 4)).style('fill', (r) => (r === d ? V.violet : '#fff'));
+      cols.transition().duration(220).style('opacity', (r) => (!d || r === d || r.date === st.asof ? 1 : 0.55));
+    };
+    const cols = s.append('g').selectAll('rect').data(rows).join('rect').attr('class', 'sv-ov lv-daily-col')
       .attr('x', (r) => x(r.date)).attr('width', x.bandwidth()).attr('y', colTop).attr('height', y(0) - colTop).attr('rx', Math.min(10, x.bandwidth() / 2))
       .style('fill', (r) => (r.date === st.asof ? 'url(#lvsel)' : 'url(#lvhatch)')).style('cursor', 'pointer')
       .on('click', (event, r) => dash.setParams({ asof: r.date }))
+      .on('pointerenter', (event, r) => focus(r))
       .on('pointermove', (event, r) => t.show(event, SV.day(r.date), [[V.violet, 'Plots completed', SV.fmt(r.d_completed)], [null, '% achieved', SV.pctF(r.pct)]]))
-      .on('pointerleave', () => t.hide());
+      .on('pointerleave', () => { t.hide(); focus(null); });
     const cx = (r) => x(r.date) + x.bandwidth() / 2;
     const line = d3.line().x(cx).y((r) => y(r.d_completed)).curve(d3.curveMonotoneX);
     const area = d3.area().x(cx).y0(y(0)).y1((r) => y(r.d_completed)).curve(d3.curveMonotoneX);
     s.append('path').attr('d', area(rows)).style('fill', 'url(#lvfill)').style('pointer-events', 'none');
-    s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', V.violet).attr('stroke-width', 2.5).style('pointer-events', 'none');
-    s.append('g').selectAll('circle').data(rows).join('circle').attr('cx', cx).attr('cy', (r) => y(r.d_completed))
+    const lp = s.append('path').attr('d', line(rows)).style('fill', 'none').style('stroke', V.violet).attr('stroke-width', 2.5).style('pointer-events', 'none');
+    if (!el.dataset.lvDrawn && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const len = lp.node().getTotalLength();
+      lp.attr('stroke-dasharray', len + ' ' + len).attr('stroke-dashoffset', len).transition().duration(1100).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0).on('end', () => lp.attr('stroke-dasharray', null));
+      el.dataset.lvDrawn = '1';
+    }
+    pts = s.append('g').selectAll('circle').data(rows).join('circle').attr('class', 'lv-daily-pt').attr('cx', cx).attr('cy', (r) => y(r.d_completed))
       .attr('r', (r) => (r.date === st.asof ? 6 : 4)).style('fill', '#fff').style('stroke', V.violet).attr('stroke-width', 2).style('pointer-events', 'none');
     const every = Math.max(1, Math.ceil(rows.length / Math.max(1, Math.floor((W - L) / 64))));
     s.append('g').selectAll('text').data(rows.filter((r, i) => i % every === 0 || r.date === st.asof)).join('text')
@@ -2091,9 +2154,17 @@ dash.draw('dtable', (tbody) => {
     const pie = d3.pie().value((d) => Math.max(0, r[d.key])).sort(null).padAngle(0.045);
     const arc = d3.arc().innerRadius(R * 0.68).outerRadius(R).cornerRadius(R * 0.16);
     const g = s.append('g').attr('transform', `translate(${W / 2},${H / 2})`);
-    g.selectAll('path').data(pie(STATUS)).join('path').attr('d', arc).style('fill', (d) => d.data.color)
+    const big = d3.arc().innerRadius(R * 0.66).outerRadius(R + 6).cornerRadius(R * 0.16);
+    const segs = g.selectAll('path').data(pie(STATUS)).join('path').attr('d', arc).style('fill', (d) => d.data.color).style('cursor', 'pointer')
+      .on('pointerenter', (event, d) => {
+        segs.transition().duration(250).attr('d', (x) => (x === d ? big(x) : arc(x))).style('opacity', (x) => (x === d ? 1 : 0.45));
+      })
       .on('pointermove', (event, d) => t.show(event, d.data.label, [[d.data.color, 'Plots', SV.fmt(r[d.data.key]) + ' (' + SV.pctF(r.plots ? r[d.data.key] / r.plots : 0) + ')']]))
-      .on('pointerleave', () => t.hide());
+      .on('pointerleave', () => { t.hide(); segs.transition().duration(250).attr('d', arc).style('opacity', 1); });
+    if (!el.dataset.lvDrawn && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.dataset.lvDrawn = '1';
+      segs.transition().duration(900).ease(d3.easeCubicOut).attrTween('d', (d) => { const i = d3.interpolate(d.startAngle, d.endAngle); return (t2) => arc({ ...d, endAngle: i(t2) }); });
+    }
     g.append('text').attr('text-anchor', 'middle').attr('y', -8).style('font-size', '13px').style('fill', V.muted).text('Total plots');
     g.append('text').attr('text-anchor', 'middle').attr('y', 24).style('font-size', '32px').style('font-weight', 700).style('fill', V.text).text(SV.fmt(r.plots));
   });
